@@ -1,0 +1,11 @@
+This QA Test Automation Data-driven framework is consisting of below components(folder structure):
+
+0. pom.xml: This is a Maven POM file located at the project-root level. All the project dependencies, build configurations, user profiles, etc are in it.
+
+1. testng.xml: This is a TestNG xml file located at the project-root level. All the Test Suite configurations(test suites, groupings, and parallel execution, etc) are in it, which are to be run by Maven Test goal to be run from CLI(i. e. mvn clean test) to invoke the test execution.
+
+2. test_data: You can put test data in excel files here. You can also specify run_flag (Y/N) to run only specific test data rows in the excel files.
+
+3. test_results: Test Results are generated with timestamp for each run. These are extent reports with screenshots.
+
+4. test_config: A global config file resides here, where you can set the test environment(QA, UAT, etc), application URL, user details, run mode(GUI/Headless), global variables, etc.
