@@ -10,4 +10,4 @@ This QA Test Automation Data-driven framework is consisting of below components(
 
 4. test_config: A global config file resides here, where you can set the test environment(QA, UAT, etc), application URL, user details, run mode(GUI/Headless), global variables, etc.
 
-5. test_cases: You can put your test cases here in excel sheets.
+5. test_cases: You can put your test cases in excel sheets here.
