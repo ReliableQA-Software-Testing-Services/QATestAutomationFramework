@@ -50,9 +50,10 @@ public class Listeners extends BaseTest implements ITestListener {
     
     @Override
     public void onTestFailure(ITestResult result) {
-        System.out.println("Test Failed: " + result.getName());
+        System.out.println("Test failed: " + result.getName());
         //getTest().log(Status.FAIL, markup);
         //getTest().fail(result.getThrowable());
+        getTest().log(Status.FAIL, "Test failed: " + result.getName());
         getTest().log(Status.FAIL, result.getThrowable());
         
         // Use the driver instance from the result to capture the screenshot
@@ -83,14 +84,15 @@ public class Listeners extends BaseTest implements ITestListener {
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        System.out.println("Test Passed: " + result.getName());
-        getTest().log(Status.PASS, "Test Passed: " + result.getName());
+        System.out.println("Test passed: " + result.getName());
+        getTest().log(Status.PASS, "Test passed: " + result.getName());
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
         System.out.println("Skipped Test: " + result.getMethod().getMethodName());
         getTest().log(Status.SKIP, "Skipped Test: " + result.getMethod().getMethodName());
+        getTest().log(Status.SKIP, result.getThrowable());
     }
     
     @Override
@@ -99,7 +101,7 @@ public class Listeners extends BaseTest implements ITestListener {
         
         //Below is just for user information
         System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the individual test results.");
-        System.out.println("Please refer to " + System.getProperty("user.dir") + "\\target\\surefire-reports directory for the latest test results.");
+        System.out.println("Please refer to " + System.getProperty("user.dir") + "\\target\\surefire-reports directory for the latest surefire report.");
         System.out.println("In case of errors, please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.");
     }
 }

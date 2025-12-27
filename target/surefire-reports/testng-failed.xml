@@ -10,7 +10,7 @@
         <methods>
           <include name="setUp"/>
           <include name="tearDown"/>
-          <include name="loginTest" invocation-numbers="0"/>
+          <include name="loginTest" invocation-numbers="0 1"/>
         </methods>
       </class> <!-- com.qatest.tests.LoginTest -->
     </classes>

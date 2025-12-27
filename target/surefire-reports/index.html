@@ -25,7 +25,7 @@
       <span class="top-banner-title-font">Test results</span>
       <button id="button" class="button">Switch Retro Theme</button> <!-- button -->
       <br/>
-      <span class="top-banner-font-1">1 suite, 1 failed test</span>
+      <span class="top-banner-font-1">1 suite, 2 failed tests</span>
     </div> <!-- top-banner-root -->
     <div class="navigator-root">
       <div class="navigator-suite-header">
@@ -92,7 +92,7 @@
               <div class="suite-section-content">
                 <ul>
                   <li>
-                    <span class="method-stats">1 method, 1 failed,   </span>
+                    <span class="method-stats">2 methods, 2 failed,   </span>
                   </li>
                   <li>
                     <span class="method-list-title failed">Failed methods</span>
@@ -104,6 +104,11 @@
                       <span>
                         <img src="failed.png" width="3%"/>
                         <a href="#" panel-name="suite-Regression_Suite_S0" title="com.qatest.tests.LoginTest" class="method navigator-link" hash-for-method="loginTest({expected_pagetitle=GitHub, testdata_id=loginpage_tc_001_td_0001, testcase_id=loginpage_tc_001, appl...)">loginTest({expected_pagetitle=GitHub, testdata_id=loginpage_tc_001_td_0001, testcase_id=loginpage_tc_001, appl...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="failed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Regression_Suite_S0" title="com.qatest.tests.LoginTest" class="method navigator-link" hash-for-method="loginTest({expected_pagetitle=Home, testdata_id=loginpage_tc_001_td_0002, testcase_id=loginpage_tc_001, applic...)">loginTest({expected_pagetitle=Home, testdata_id=loginpage_tc_001_td_0002, testcase_id=loginpage_tc_001, applic...)</a> <!-- method navigator-link -->
                       </span>
                       <br/>
                     </div> <!-- method-list-content failed suite-Regression_Suite_S0 -->
@@ -131,6 +136,19 @@
                   <span class="method-name">loginTest</span>
                   <span class="parameters">({expected_pagetitle=GitHub, testdata_id=loginpage_tc_001_td_0001, testcase_id=loginpage_tc_001, application_under_test=https://github.com/login, run_flag=Y, remarks=, username=test1})</span>
                   <div class="stack-trace">java.lang.AssertionError: Page title does not match! expected [GitHub] but found [Redirecting to Google]
+	at com.qatest.tests.LoginTest.loginTest(LoginTest.java:76)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+... Removed 36 stack frames
+</div> <!-- stack-trace -->
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="loginTest({expected_pagetitle=Home, testdata_id=loginpage_tc_001_td_0002, testcase_id=loginpage_tc_001, applic...)">
+                  </a> <!-- loginTest({expected_pagetitle=Home, testdata_id=loginpage_tc_001_td_0002, testcase_id=loginpage_tc_001, applic...) -->
+                  <span class="method-name">loginTest</span>
+                  <span class="parameters">({expected_pagetitle=Home, testdata_id=loginpage_tc_001_td_0002, testcase_id=loginpage_tc_001, application_under_test=, run_flag=Y, remarks=, username=test2})</span>
+                  <div class="stack-trace">java.lang.AssertionError: Page title does not match! expected [Home] but found [Redirecting to Google]
 	at com.qatest.tests.LoginTest.loginTest(LoginTest.java:76)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 ... Removed 36 stack frames
@@ -198,16 +216,20 @@ data.addColumn('number', 'Number');
 data.addColumn('string', 'Method');
 data.addColumn('string', 'Class');
 data.addColumn('number', 'Time (ms)');
-data.addRows(1);
+data.addRows(2);
 data.setCell(0, 0, 0)
 data.setCell(0, 1, 'loginTest')
 data.setCell(0, 2, 'com.qatest.tests.LoginTest')
-data.setCell(0, 3, 23716);
+data.setCell(0, 3, 18963);
+data.setCell(1, 0, 1)
+data.setCell(1, 1, 'loginTest')
+data.setCell(1, 2, 'com.qatest.tests.LoginTest')
+data.setCell(1, 3, 16507);
 window.suiteTableData['Regression_Suite_S0']= { tableData: data, tableDiv: 'times-div-Regression_Suite_S0'}
 return data;
 }
               </script>
-              <span class="suite-total-time">Total running time: 23 seconds</span>
+              <span class="suite-total-time">Total running time: 35 seconds</span>
               <div id="times-div-Regression_Suite_S0">
               </div> <!-- times-div-Regression_Suite_S0 -->
             </div> <!-- times-div -->
@@ -249,11 +271,25 @@ return data;
                 <img src="failed.png">
                 </img>
                 <span class="method-name">loginTest({expected_pagetitle=GitHub, testdata_id=loginpage_tc_001_td_0001, testcase_id=loginpage_tc_001, appl...)</span>
-                <span class="method-start">184025 ms</span>
+                <span class="method-start">186678 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-method after">
                 <span class="method-name">tearDown</span>
-                <span class="method-start">211981 ms</span>
+                <span class="method-start">207014 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="configuration-method before">
+                <span class="method-name">setUp</span>
+                <span class="method-start">237209 ms</span>
+              </div> <!-- configuration-method before -->
+              <div class="test-method">
+                <img src="failed.png">
+                </img>
+                <span class="method-name">loginTest({expected_pagetitle=Home, testdata_id=loginpage_tc_001_td_0002, testcase_id=loginpage_tc_001, applic...)</span>
+                <span class="method-start">303852 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">tearDown</span>
+                <span class="method-start">323305 ms</span>
               </div> <!-- configuration-method after -->
           </div> <!-- main-panel-content rounded-window-bottom -->
         </div> <!-- panel -->
