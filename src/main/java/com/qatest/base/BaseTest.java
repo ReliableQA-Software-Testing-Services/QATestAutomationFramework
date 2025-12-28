@@ -34,7 +34,8 @@ public class BaseTest {
         return tldriver.get();
     }
     
-    protected Properties prop;
+    //protected Properties prop;
+    public static Properties prop;
     ConfigReader cr;
 
     @BeforeMethod
@@ -84,7 +85,7 @@ public class BaseTest {
         getDriver().manage().window().maximize();
         getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         getDriver().get(urlText);
-        System.out.println("Browser: " + browserName + " launched with URL: " + urlText);
+        System.out.println("Browser: " + browserName + " launched with URL: " + urlText + " in Headless:" + headless + " mode");
     }
 
     @AfterMethod

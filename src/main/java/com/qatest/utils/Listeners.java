@@ -46,6 +46,11 @@ public class Listeners extends BaseTest implements ITestListener {
                 LoggingUtil.logDataMap((Map<String, String>) param);
             }
         }
+        
+      //print Application URL, Browser type and Headless mode in the report
+    	getTest().log(Status.INFO, "Browser: " + prop.getProperty("browser") + 
+    			" launched with URL: " + prop.getProperty("url") + 
+    			" in Headless:" + prop.getProperty("headless") + " mode");
     }
     
     @Override
