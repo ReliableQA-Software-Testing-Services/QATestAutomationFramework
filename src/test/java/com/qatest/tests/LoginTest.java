@@ -43,7 +43,7 @@ public class LoginTest extends BaseTest {
 	    loginPage.login(user, pwd);
 	}*/
 	
-	@DataProvider(name = "LoginData")
+	@DataProvider(name = "LoginData", parallel = true)
 	public Object[][] getLoginData() {
 	    // Logic inside ExcelUtil would package each row into a HashMap<String, String>
 	    //return ExcelUtil.getTestDataAsMap(".\\test_data\\testdata_loginpage.xlsx", "td_loginpage", "run_flag", "Y"); 
@@ -63,11 +63,15 @@ public class LoginTest extends BaseTest {
 	    //getDriver().get(data.get("URL"));
 	    LoginPage loginPage = new LoginPage(getDriver());
 	    //loginPage.doLogin(data.get("Username"), data.get("Password"));
-	    loginPage.login(data.get("username"), "");
+	    //loginPage.login(data.get("username"), "");
+	    loginPage.enterUsername(data.get("username"));
 	    
-	    /*String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), data.get("username"));
+	    String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), data.get("username"));
 	    Listeners.getTest().log(Status.INFO, "User: " + data.get("username"), 
-				MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());*/
+				MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+	    
+	    loginPage.enterPassword("");
+	    loginPage.clickLogin();
 	    
 	    String actualTitle = getDriver().getTitle();
         //String expectedTitle = "GitHub";
@@ -86,6 +90,7 @@ public class LoginTest extends BaseTest {
 		//Fail intentionally
 		Assert.assertEquals("a", "b", "a is not b");
 		
+		//Below lines won't be executed as the above assertion failed !
 		Listeners.getTest().log(Status.INFO, "Hi, Divyang!", 
 				MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
 		//Listeners.getTest().info("Hi, Divyang!", 
