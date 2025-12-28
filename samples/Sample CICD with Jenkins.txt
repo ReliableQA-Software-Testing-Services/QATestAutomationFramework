@@ -1,0 +1,87 @@
+Courtesy: Google Gemini
+
+Jenkins Integration:
+A Jenkinsfile (Pipeline Script) is the industry-standard way to implement "Infrastructure as Code." It defines your entire testing lifecycle—from fetching code from GitHub to running headless tests and archiving your beautiful ExtentReports.
+
+Place this file in your Project Root Directory.
+
+1. The Jenkins Pipeline Script (Declarative) in Groovy:
+pipeline {
+    agent any 
+
+    tools {
+        // Ensure 'Maven3' and 'JDK17' match the names configured in Jenkins Global Tool Configuration
+        maven 'Maven3'
+        jdk 'JDK17'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Fetches code from your repository
+                git branch: 'main', url: 'https://github.com/your-repo/test-automation.git'
+            }
+        }
+
+        stage('Build & Test') {
+            steps {
+                // Using the -Pheadless profile we created earlier
+                // -DsuiteXmlFile allows you to swap suites if needed
+                sh 'mvn clean test -Pheadless -DsuiteXmlFile=testng.xml'
+            }
+        }
+    }
+
+    post {
+        always {
+            // Archive the ExtentReport so it's viewable in Jenkins
+            publishHTML(target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'reports',
+                reportFiles: 'index.html',
+                reportName: 'Extent Report'
+            ])
+            
+            // Capture TestNG results for the Jenkins trend graph
+            junit 'target/surefire-reports/*.xml'
+        }
+        
+        failure {
+            echo "Regression Suite Failed. Check the Extent Report for details."
+        }
+    }
+}
+
+
+2. Setting it up in Jenkins
+Install Plugins: Ensure you have the Pipeline, Maven Integration, and HTML Publisher plugins installed in Jenkins.
+
+Create Job: Select "New Item" -> Pipeline.
+
+Pipeline Definition: Choose "Pipeline script from SCM."
+
+SCM: Select Git, enter your Repository URL, and set the Script Path to Jenkinsfile.
+
+3. Why this completes your Framework
+Trigger on Push: You can set Jenkins to run these tests automatically every time you commit code.
+
+Single Source of Truth: The Jenkinsfile lives in your repo, so any teammate can set up the same CI/CD pipeline instantly.
+
+Report Persistence: The publishHTML step ensures that your ExtentReports are saved for every build, creating a historical record of your app's stability.
+
+4. Final Framework Architecture Recap
+Java/Selenium: Core logic.
+
+POM: Maintenance-friendly structure.
+
+Excel/Apache POI: Data-driven flexibility.
+
+TestNG/ThreadLocal: Parallel, thread-safe execution.
+
+ExtentReports: High-quality visual feedback.
+
+Maven Profiles: Environmental control (Headless vs. GUI).
+
+Jenkins: Full CI/CD automation.

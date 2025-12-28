@@ -1,0 +1,151 @@
+To run your Selenium tests in parallel across multiple machines and browsers, you can set up a Selenium Grid. Here's a step-by-step guide to help you configure it:
+
+What is Selenium Grid ?
+Selenium Grid allows you to run tests on different machines (nodes) and browsers in parallel by routing commands from a central Hub to remote Nodes.
+
+Pre-requisites:
+1. Java installed on all machines
+2. Selenium Server JAR (or use Docker for easier setup)
+3. Browsers and drivers (e.g., ChromeDriver, GeckoDriver) installed on each node
+4. Network connectivity between Hub and Nodes
+
+Docker-Based Selenium Grid (Recommended):
+Step 1: Install Docker on all machines
+
+Step 2: Use Docker Compose (on Hub machine)
+ Create a docker-compose.yml as below:
+
+version: "3"
+services:
+  selenium-hub:
+    image: selenium/hub:4.18.1
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+
+  chrome:
+    image: selenium/node-chrome:4.18.1
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  firefox:
+    image: selenium/node-firefox:4.18.1
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+Step 3: Start the grid -->Run "docker-compose up -d" command and access Grid UI at http://localhost:4444/ui
+
+Step 4: TestNG + RemoteWebDriver Integration -->In your test base class
+public class BaseTest {
+    protected WebDriver driver;
+
+    @Parameters({"browser"})
+    @BeforeMethod
+    public void setup(String browser) throws MalformedURLException {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        if (browser.equalsIgnoreCase("chrome")) {
+            caps.setBrowserName("chrome");
+        } else if (browser.equalsIgnoreCase("firefox")) {
+            caps.setBrowserName("firefox");
+        }
+        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), caps);
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
+
+Step 5: An example TestNG XML for Parallel Browsers
+<suite name="GridSuite" parallel="tests" thread-count="2">
+    <test name="ChromeTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="tests.LoginTest"/>
+        </classes>
+    </test>
+    <test name="FirefoxTests">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="tests.LoginTest"/>
+        </classes>
+    </test>
+</suite>
+
+Step 6: Jenkins Integration (CI/CD)
+-Install Plugins --> Docker Pipeline, Maven Integration, HTML Publisher plugins and TestNG Results Plugin
+-A Jenkinsfile example:
+pipeline {
+    agent any
+	
+    tools {
+        // Ensure 'Maven3' and 'JDK17' match the names configured in Jenkins Global Tool Configuration
+        maven 'Maven3'
+        jdk 'JDK17'
+    }
+
+    stages {
+        stage('Start Selenium Grid') {
+            steps {
+                sh 'docker-compose -f docker-compose.yml up -d'
+            }
+        }
+	stage('Checkout') {
+            steps {
+                // Fetches code from your repository
+                git branch: 'main', url: 'https://github.com/your-repo/test-automation.git'
+            }
+        }
+
+        stage('Build & Test') {
+            steps {
+                // Using the -Pheadless Maven profile we created earlier
+                // -DsuiteXmlFile allows you to swap suites if needed
+                sh 'mvn clean test -Pheadless -DsuiteXmlFile=testng.xml'
+            }
+        }
+        stage('Publish Results') {
+            post {
+                always {
+                    	junit 'test-output/testng-results.xml'
+			
+			// Archive the ExtentReport so it's viewable in Jenkins
+            		publishHTML(target: [
+                		allowMissing: false,
+                		alwaysLinkToLastBuild: true,
+                		keepAll: true,
+                		reportDir: 'reports',
+                		reportFiles: 'index.html',
+                		reportName: 'Extent Report'
+            			])
+            
+            		// Capture TestNG results for the Jenkins trend graph
+            		junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Stop Grid') {
+            steps {
+                sh 'docker-compose down'
+            }
+        }
+    }//stages
+
+}//pipeline
+
+Notes: To run your Selenium Grid setup and automated tests using Jenkins, the Jenkinsfile should be placed in the root directory of your project repository — the same level as your pom.xml and docker-compose.yml. Jenkins uses the Jenkinsfile as a pipeline definition. When you configure a Jenkins job to use Pipeline from SCM (e.g., Git), it looks for the Jenkinsfile at the root by default.

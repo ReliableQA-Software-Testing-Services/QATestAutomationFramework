@@ -1,0 +1,40 @@
+web-ui-test-automation-framework/
+│── pom.xml
+│── testng.xml
+│── config.properties
+│── TestData.xlsx
+│
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com.framework
+│   │   │       ├── base
+│   │   │       │   ├── BaseTest.java
+│   │   │       │   ├── DriverFactory.java
+│   │   │       │   └── ConfigManager.java
+│   │   │       │
+│   │   │       ├── pages
+│   │   │       │   ├── LoginPage.java
+│   │   │       │   ├── HomePage.java
+│   │   │       │   ├── SearchPage.java
+│   │   │       │   └── ProfilePage.java
+│   │   │       │
+│   │   │       ├── utils
+│   │   │       │   ├── ExcelUtils.java
+│   │   │       │   ├── TestDataProvider.java
+│   │   │       │   ├── ScreenshotUtils.java
+│   │   │       │   └── ReportManager.java
+│   │   │       │
+│   │   │       └── constants
+│   │   │           └── FrameworkConstants.java
+│   │   │
+│   │   └── resources
+│   │       └── log4j.properties
+│   │
+│   └── test
+│       └── java
+│           └── com.framework.tests
+│               ├── LoginTest.java
+│               ├── SearchTest.java
+│               ├── ProfileTest.java
+│               └── RegressionSuite.java
