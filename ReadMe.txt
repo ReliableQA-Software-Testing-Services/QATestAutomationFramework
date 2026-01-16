@@ -2,7 +2,7 @@ This QA Test Automation Data-driven framework is consisting of below components(
 
 0. pom.xml: This is a Maven POM file located at the project-root level. All the project dependencies, build configurations, user profiles, etc are in it.
 
-1. testng.xml: This is a TestNG xml file located at the project-root level. All the Test Suite configurations(test suites, groupings, and parallel execution, etc) are in it, which are to be run by Maven Test goal to be run from CLI(i. e. mvn clean test) to invoke the test execution.
+1. testng.xml: This is a TestNG xml file located at the project-root level. All the Test Suite configurations(test suites, groupings, and parallel execution, etc) are in it, which are to be run by Maven Test goal (i. e. mvn clean test).
 
 2. test_data: You can put test data in excel files here. You can also specify run_flag (Y/N) to run only specific test data rows in the excel files.
 
@@ -10,4 +10,8 @@ This QA Test Automation Data-driven framework is consisting of below components(
 
 4. test_config: A global config file resides here, where you can set the test environment(QA, UAT, etc), application URL, user details, run mode(GUI/Headless), global variables, etc.
 
-5. test_cases: You can put your test cases in excel sheets here.
+5. test_cases: You can put your test cases in excel sheets here. These testcases are automated using Selenium WebDriver with Java in the project's src\test\java folder.
+
+
+How to run the automated test cases:
+-From CLI, run "mvn clean test" command to invoke the automated test execution.
