@@ -1,0 +1,10 @@
+0. Print Test Suite Name in the extent reports -InProgress
+To filter tests by test suites in the extent reports, assign a test category (tag) in the TestNG Listener class method “onTestStart” 
+
+1. Configure pom.xml to run with multiple TestNG suiteXmlFiles -Done
+Put multiple testng XML files in the build configuration in Maven pom.xml and run CLI “mvn clean test” command to run them all.
+OR 
+CLI: mvn clean test -Dsurefire.suiteXmlFiles=/path/to/testng/xml/files [comma-separated values for the path]
+
+2. How to run “mvn clean test” with a specific TestNG suiteXmlFile ? -Done
+CLI: mvn clean test -Dsurefire.suiteXmlFiles=/path/to/testng/xml/file

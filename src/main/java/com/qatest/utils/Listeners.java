@@ -32,8 +32,18 @@ public class Listeners extends BaseTest implements ITestListener {
     }
     
     @Override
+    public void onStart(ITestContext context) {
+    	// Get the suite name in the testng xml file
+        String suiteName = context.getSuite().getName();
+        //Below is just for user information
+        System.out.println("TestNG TestSuite: " + suiteName);
+    }
+    
+    @Override
     public void onTestStart(ITestResult result) {
     	ExtentTest test = extent.createTest(result.getMethod().getMethodName());
+    	// Assigning the suite name as a category for easy filtering
+        test.assignCategory(result.getTestContext().getSuite().getName());
     	extentTest.set(test); // Store the test object for the current thread
     	
     	System.out.println("Started Test: " + result.getMethod().getMethodName());
@@ -49,8 +59,8 @@ public class Listeners extends BaseTest implements ITestListener {
         
       //print Application URL, Browser type and Headless mode in the report
     	getTest().log(Status.INFO, "Browser: " + prop.getProperty("browser") + 
-    			" launched with URL: " + prop.getProperty("url") + 
-    			" in Headless:" + prop.getProperty("headless") + " mode");
+    			", URL: " + prop.getProperty("url") + 
+    			", Headless Mode:" + prop.getProperty("headless"));
     }
     
     @Override

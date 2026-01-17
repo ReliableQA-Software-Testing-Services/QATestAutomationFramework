@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <!-- <suite name="Regression Suite S0"> -->
-<suite name="Regression Suite S1" >
+<suite name="Regression_Suite_S1" >
 
     <listeners>
         <listener class-name="com.qatest.utils.Listeners" />
@@ -10,9 +10,9 @@
     <test name="DataDriven-Login-Tests" parallel="methods" thread-count="3">
         <classes>
       		<class name="com.qatest.tests.LoginTest">
-      			<!-- <methods>
+      			<methods>
       				<exclude name="print_msg" />
-      			</methods> --> 
+      			</methods> 
       		</class>
     	</classes>
     </test>
