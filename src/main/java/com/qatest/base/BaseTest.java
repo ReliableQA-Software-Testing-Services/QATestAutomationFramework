@@ -15,8 +15,10 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -34,12 +36,24 @@ public class BaseTest {
         return tldriver.get();
     }
     
+    private ConfigReader cr;
     //protected Properties prop;
     public static Properties prop;
-    ConfigReader cr;
+    
+    //Default constructor
+    protected BaseTest(){
+    	// TODO 
+    }
 
-    @BeforeMethod
-    public void setUp() throws IOException {
+    @BeforeSuite
+    public void setupSuite() {
+    	// Load config properties file (contains browser type, URL, etc.)
+    	cr = new ConfigReader();
+        prop = cr.init_prop();
+    }
+    
+    /*@BeforeTest
+    public void setUpTest() throws IOException {
         // Load config properties file (contains browser type, URL, etc.)
     	cr = new ConfigReader();
         prop = cr.init_prop();
@@ -78,9 +92,9 @@ public class BaseTest {
         }
         
         tldriver.set(driver); // Set the driver for the current thread
-        /*driver.manage().window().maximize();
+        driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.get(prop.getProperty("url"));*/
+        driver.get(prop.getProperty("url"));
         
         getDriver().manage().window().maximize();
         getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -88,14 +102,22 @@ public class BaseTest {
         System.out.println("Browser: " + browserName + " launched with URL: " + urlText + " in Headless:" + headless + " mode");
     }
 
-    @AfterMethod
-    public void tearDown() {
-        /*if (driver != null) {
+    @AfterTest
+    public void tearDownTest() {
+        if (driver != null) {
             driver.quit();
-        }*/
+        }
     	if (getDriver() != null) {
         getDriver().quit();
         tldriver.remove(); // Clean up the thread
     	}
+    }
+*/    
+    @AfterSuite
+    public void tearDownSuite() {
+        //Below is just for user information
+        System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the individual test results.");
+        System.out.println("Please refer to " + System.getProperty("user.dir") + "\\target\\surefire-reports directory for the latest surefire report.");
+        System.out.println("In case of errors, please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.");
     }
 }
