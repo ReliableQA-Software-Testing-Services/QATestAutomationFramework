@@ -20,7 +20,8 @@ import com.qatest.base.BaseTest;
  * @author Divyang
  *
  */
-public class Listeners extends BaseTest implements ITestListener {
+//public class Listeners extends BaseTest implements ITestListener {
+public class Listeners implements ITestListener {
 	private static ExtentReports extent = ExtentReportsManager.getInstance();
     //ExtentTest test;
 	// ThreadLocal creates a unique instance of ExtentTest for every thread
@@ -57,10 +58,11 @@ public class Listeners extends BaseTest implements ITestListener {
             }
         }
         
-      //print Application URL, Browser type and Headless mode in the report
-    	getTest().log(Status.INFO, "Browser: " + prop.getProperty("browser") + 
-    			", URL: " + prop.getProperty("url") + 
-    			", Headless Mode:" + prop.getProperty("headless"));
+        //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
+    	getTest().log(Status.INFO, "Browser: " + BaseTest.prop.getProperty("browser") + 
+    			", " + "URL: " + BaseTest.prop.getProperty("url") + 
+    			", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") + 
+    			", " + "Grid Run:" + BaseTest.prop.getProperty("grid_run"));
     }
     
     @Override
@@ -80,13 +82,16 @@ public class Listeners extends BaseTest implements ITestListener {
             e.printStackTrace();
         }*/
         
-        /*Object currentClass = result.getInstance(); 
-        WebDriver driver = ((com.framework.base.BaseTest) currentClass).getDriver(); 
-        String screenshotPath = ScreenshotUtils.captureScreenshot(driver, result.getMethod().getMethodName());*/
+        /*try {
+	        Object currentClass = result.getInstance(); 
+	        WebDriver driver = ((com.qatest.base.BaseTest) currentClass).getDriver(); 
+	        String screenshotPath = ScreenshotUtils.captureScreenshot(driver, result.getMethod().getMethodName());*/
         
-        //WebDriver driver = BaseTest.getDriver();
         try {
-	        String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), result.getMethod().getMethodName());
+        	//String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), result.getMethod().getMethodName());
+        	WebDriver driver = BaseTest.getDriver();
+        	String screenshotPath = ScreenshotUtils.captureScreenshot(driver, result.getMethod().getMethodName());
+	        
 	        //getTest().addScreenCaptureFromPath(screenshotPath);
 	        //getTest().fail("Test Failed - Screenshot attached:", 
 	        //        MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
@@ -115,8 +120,8 @@ public class Listeners extends BaseTest implements ITestListener {
         extent.flush(); // This is mandatory to generate the report file
         
         //Below is just for user information
-        System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the individual test results.");
+        /*System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the individual test results.");
         System.out.println("Please refer to " + System.getProperty("user.dir") + "\\target\\surefire-reports directory for the latest surefire report.");
-        System.out.println("In case of errors, please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.");
+        System.out.println("In case of errors, please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.");*/
     }
 }

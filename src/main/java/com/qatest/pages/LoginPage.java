@@ -8,14 +8,14 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-import com.qatest.base.BaseTest;
+//import com.qatest.base.BaseTest;
 
 /**
  * @author Divyang
  *
  */
-public class LoginPage extends BaseTest {
-    
+//public class LoginPage extends BaseTest {
+public class LoginPage {
     // 1. Locators using Page Factory
     @FindBy(name = "login")
     private WebElement txtUsername;
