@@ -4,7 +4,8 @@
 package com.qatest.base;
 
 import java.io.IOException;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 
 import java.util.Properties;
@@ -14,12 +15,17 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+//import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+//import org.testng.xml.XmlTest;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -46,20 +52,23 @@ public class BaseTest {
     }
 
     @BeforeSuite
-    public void setupSuite() {
-    	// Load config properties file (contains browser type, URL, etc.)
+    public void setUpSuite() {
+    	// Load config properties file (contains URL, Headless Mode, Grid Run Flag, etc.)
     	cr = new ConfigReader();
         prop = cr.init_prop();
     }
     
-    /*@BeforeTest
-    public void setUpTest() throws IOException {
-        // Load config properties file (contains browser type, URL, etc.)
-    	cr = new ConfigReader();
-        prop = cr.init_prop();
+    @BeforeMethod
+    @Parameters({"browser"})
+    public void setUpTest(@Optional("chrome") String browser) throws IOException, MalformedURLException, InterruptedException {
+    	// Load config properties file (contains browser type, URL, etc.)
+    	/*cr = new ConfigReader();
+        prop = cr.init_prop();*/
 
-        String browserName = prop.getProperty("browser");
+        //String browserName = prop.getProperty("browser");
+        prop.setProperty("browser", browser);
         String  urlText = prop.getProperty("url");
+        String gridRunFlag = prop.getProperty("grid_run");
         WebDriver driver = null;
         
         // Read the property set by Maven Profiles in pom.xml
@@ -67,18 +76,31 @@ public class BaseTest {
         // Read the property from config properties file
         String headless = prop.getProperty("headless"); 
 
-        if (browserName.equalsIgnoreCase("chrome")) {
+        if (browser.equalsIgnoreCase("chrome")) {
         	ChromeOptions options = new ChromeOptions();
-            
+        	//options.addArguments("--incognito");
+            options.addArguments("--start-maximized");
+            //options.addArguments("--disable-gpu");
+        	
+        	//options.setCapability("os", "Windows");
+        	//options.setCapability("os_version", "11");
+        	//options.setCapability("browser_version", "latest");
+
+
             if (headless.equalsIgnoreCase("true")) {
                 options.addArguments("--headless=new");
                 options.addArguments("--window-size=1920,1080");
             }
             
             WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver(options);
-            //tldriver.set(driver); // Set the driver for the current thread
-        } else if (browserName.equalsIgnoreCase("firefox")) {
+            
+            //For running Selenium Grid
+            if (gridRunFlag.equalsIgnoreCase("true")) {
+            	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+            } else {
+            	driver = new ChromeDriver(options);
+            }    
+        } else if (browser.equalsIgnoreCase("firefox")) {
         	FirefoxOptions options = new FirefoxOptions();
             
             if (headless.equalsIgnoreCase("true")) {
@@ -87,34 +109,49 @@ public class BaseTest {
             }
             
             WebDriverManager.firefoxdriver().setup();
-            driver = new FirefoxDriver(options);
-            //tldriver.set(driver); // Set the driver for the current thread
+            
+            //For running Selenium Grid
+            if (gridRunFlag.equalsIgnoreCase("true")) {
+            	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+            } else {
+            	driver = new FirefoxDriver(options);
+            }
+        } else {
+            throw new IllegalArgumentException("Unsupported browser: " + browser);
         }
         
         tldriver.set(driver); // Set the driver for the current thread
-        driver.manage().window().maximize();
+        /*driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.get(prop.getProperty("url"));
+        driver.get(prop.getProperty("url"));*/
         
         getDriver().manage().window().maximize();
         getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         getDriver().get(urlText);
-        System.out.println("Browser: " + browserName + " launched with URL: " + urlText + " in Headless:" + headless + " mode");
+        System.out.println("Browser: " + browser + 
+        		" launched with URL: " + urlText + 
+        		" in Headless: " + headless + 
+        		" mode with Selenium Grid Run: " + gridRunFlag);
     }
 
-    @AfterTest
-    public void tearDownTest() {
-        if (driver != null) {
+    @AfterMethod
+    @Parameters({"browser"})
+    public void tearDownTest(@Optional("chrome") String browser) {
+        /*if (driver != null) {
             driver.quit();
-        }
+        }*/
     	if (getDriver() != null) {
         getDriver().quit();
-        tldriver.remove(); // Clean up the thread
+        System.out.println("Browser: " + browser + " closed.");
+        		
+        tldriver.remove(); // This is necessary to clean up the thread
     	}
     }
-*/    
+    
     @AfterSuite
     public void tearDownSuite() {
+    	prop.clear();// Clear all config properties
+    	
         //Below is just for user information
         System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the individual test results.");
         System.out.println("Please refer to " + System.getProperty("user.dir") + "\\target\\surefire-reports directory for the latest surefire report.");

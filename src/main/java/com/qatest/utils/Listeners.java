@@ -62,7 +62,7 @@ public class Listeners implements ITestListener {
     	getTest().log(Status.INFO, "Browser: " + BaseTest.prop.getProperty("browser") + 
     			", " + "URL: " + BaseTest.prop.getProperty("url") + 
     			", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") + 
-    			", " + "Grid Run:" + BaseTest.prop.getProperty("grid_run"));
+    			", " + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
     }
     
     @Override

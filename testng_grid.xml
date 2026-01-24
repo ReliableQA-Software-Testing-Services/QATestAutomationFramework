@@ -1,0 +1,18 @@
+<suite name="GridSuite" parallel="tests" thread-count="2">
+	<listeners>
+        <listener class-name="com.qatest.utils.Listeners" />
+    </listeners>
+    
+    <test name="ChromeTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qatest.tests.GridDemo"/>
+        </classes>
+    </test>
+    <test name="FirefoxTests">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.qatest.tests.GridDemo"/>
+        </classes>
+    </test>
+</suite>
