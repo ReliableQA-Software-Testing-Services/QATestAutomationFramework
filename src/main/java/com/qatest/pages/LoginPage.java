@@ -23,7 +23,7 @@ public class LoginPage {
     @FindBy(name = "password")
     private WebElement txtPassword;
 
-    @FindBy(xpath = "//button[@type='submit']")
+    @FindBy(xpath = "//input[@value='Sign in']")
     private WebElement btnLogin;
 
     @FindBy(id = "flash")
