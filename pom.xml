@@ -120,7 +120,7 @@
         </plugins>
     </build>
 	
-	<!-- A Maven profile allows you to switch between Headless (for CI/CD/Jenkins) and GUI mode (for local debugging) without touching a single line of Java code -->
+	<!-- A Maven profile allows you to switch between Headless (for CI/CD Jenkins) and GUI mode (for local debugging) without touching a single line of Java code -->
 	<profiles>
 	    <profile>
 	        <id>gui</id>
