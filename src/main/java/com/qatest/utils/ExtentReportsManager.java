@@ -14,7 +14,7 @@ import com.aventstack.extentreports.reporter.ExtentSparkReporter;
  */
 public class ExtentReportsManager {
 	public static ExtentReports extent;
-
+	
     public static ExtentReports getInstance() {
         if (extent == null) {
         	// System.getProperty("user.dir") returns the current project root path
@@ -22,18 +22,27 @@ public class ExtentReportsManager {
             String timestamp = DateTimeUtil.getCurrentTimestamp();
             
             // Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
-            String reportFilePath = projectPath + File.separator + "test_results" + 
+            String sparkReportFilePath = projectPath + File.separator + "test_results" + 
             		File.separator + "extent-reports" +           
             		File.separator + "TestReport_" + timestamp + ".html";
             //String path = System.getProperty("user.dir") + File.separator + "reports" + File.separator + "index.html";
-            ExtentSparkReporter reporter = new ExtentSparkReporter(reportFilePath);
-            reporter.config().setReportName("QA Automation Results");
-            reporter.config().setDocumentTitle("Test Execution Report");
+            ExtentSparkReporter sparkReporter = new ExtentSparkReporter(sparkReportFilePath);
+            sparkReporter.config().setReportName("QA Automation Results");
+            sparkReporter.config().setDocumentTitle("Test Execution Report");
+                        
+            /*String emailReportFilePath = projectPath + File.separator + "test_results" + 
+    		File.separator + "extent-reports" +           
+    		File.separator + "EmailableTestReport_" + timestamp + ".html";
+    		
+            ExtentEmailReporter emailReporter = new ExtentEmailReporter(emailReportFilePath);*/
 
             extent = new ExtentReports();
-            extent.attachReporter(reporter);
+            extent.attachReporter(sparkReporter);
+            /*You can attach multiple reporters and output the same information to each report
+            extent.attachReporter(sparkReporter, emailReporter);*/
             extent.setSystemInfo("Tester", "QA Engineer");
             extent.setSystemInfo("Environment", "QA");
+            
         }
         return extent;
     }
