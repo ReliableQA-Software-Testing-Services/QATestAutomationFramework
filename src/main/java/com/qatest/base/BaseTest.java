@@ -60,7 +60,9 @@ public class BaseTest {
     
     @BeforeMethod
     @Parameters({"browser"})
-    public void setUpTest(@Optional("chrome") String browser) throws IOException, MalformedURLException, InterruptedException {
+    public void setUpTest(@Optional("chrome") String browser) throws IOException, 
+																	MalformedURLException, 
+																	InterruptedException {
     	// Load config properties file (contains browser type, URL, etc.)
     	/*cr = new ConfigReader();
         prop = cr.init_prop();*/

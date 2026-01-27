@@ -30,24 +30,26 @@ public class GridDemo extends BaseTest {
 		// TODO Auto-generated constructor stub
 	}
 	
-	@Parameters({"browser"})
+	//@Parameters({"browser"})
 	@Test
-	public void gridDemo(String browser) throws MalformedURLException, InterruptedException {
-		DesiredCapabilities caps = new DesiredCapabilities();
+	//public void gridDemo(String browser) throws MalformedURLException, InterruptedException {
+	public void gridDemo() throws InterruptedException {
+		/*DesiredCapabilities caps = new DesiredCapabilities();
         if (browser.equalsIgnoreCase("chrome")) {
             caps.setBrowserName("chrome");
         } else if (browser.equalsIgnoreCase("firefox")) {
             caps.setBrowserName("firefox");
-        }
-        Listeners.getTest().log(Status.INFO, "Browser: " + browser);
+        }*/
+        //Listeners.getTest().log(Status.INFO, "Browser: " + browser);
         
-        WebDriver remote_driver = new RemoteWebDriver(new URL("http://localhost:4445/wd/hub"), caps);
+        //WebDriver remote_driver = new RemoteWebDriver(new URL("http://localhost:4445/wd/hub"), caps);
+        WebDriver remote_driver = getDriver();
         remote_driver.get("https://www.google.com");
         remote_driver.findElement(By.name("q")).sendKeys("Learn Automation using Selenium Grid");
         
         Thread.sleep(5000);
-        remote_driver.close();
-        remote_driver.quit();
+        /*remote_driver.close();
+        remote_driver.quit();*/
 	}
 
 }
