@@ -68,7 +68,7 @@ public class BaseTest {
         prop = cr.init_prop();*/
 
         //String browserName = prop.getProperty("browser");
-        prop.setProperty("browser", browser);
+        
         String  urlText = prop.getProperty("url");
         String gridRunFlag = prop.getProperty("grid_run");
         WebDriver driver = null;
