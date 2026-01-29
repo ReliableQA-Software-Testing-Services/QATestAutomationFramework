@@ -17,15 +17,22 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 //import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterGroups;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 //import org.testng.xml.XmlTest;
+
+import com.aventstack.extentreports.Status;
+import com.qatest.utils.Listeners;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -50,7 +57,57 @@ public class BaseTest {
     protected BaseTest(){
     	// TODO 
     }
+/*
+    @BeforeSuite
+    public void beforeSuite() {
+        System.out.println("Initialize DB connection, Reporting and/or Selenium Grid Setup for entire suite");
+    }
 
+    @AfterSuite
+    public void afterSuite() {
+        System.out.println("Close DB connection, flush the reporting or shutdown the Grid after suite execution");
+    }
+    
+    @BeforeTest
+    public void beforeTest() {
+        System.out.println("Setup an environment(staging/prod) before a <test> block in TestNG XML");
+    }
+
+    @AfterTest
+    public void afterTest() {
+        System.out.println("Teardown an environment(staging/prod) after a <test> block in TestNG XML");
+    }
+    
+    @BeforeGroups({"ui", "api"})
+    public void beforeUIGroup() {
+        System.out.println("Select UI/API/Performance test resources");
+    }
+
+    @AfterGroups("ui")
+    public void afterUIGroup() {
+        System.out.println("Release UI/API/Performance test resources");
+    }
+    
+    @BeforeClass
+    public void beforeClass() {
+        System.out.println("Initialize Page Objects before class tests");
+    }
+
+    @AfterClass
+    public void afterClass() {
+        System.out.println("Release resources after class tests");
+    }
+    
+    @BeforeMethod
+    public void beforeMethod() {
+        System.out.println("Reset test data before each method");
+    }
+
+    @AfterMethod
+    public void afterMethod() {
+        System.out.println("Log results after each method");
+    }
+*/
     @BeforeSuite
     public void setUpSuite() {
     	// Load config properties file (contains URL, Headless Mode, Grid Run Flag, etc.)
@@ -66,7 +123,6 @@ public class BaseTest {
         prop = cr.init_prop();*/
 
         //String browserName = prop.getProperty("browser");
-        prop.setProperty("browser", browser);
         String  urlText = prop.getProperty("url");
         String gridRunFlag = prop.getProperty("grid_run");
         WebDriver driver = null;
@@ -92,7 +148,9 @@ public class BaseTest {
                 options.addArguments("--window-size=1920,1080");
             }
             
-            WebDriverManager.chromedriver().setup();
+            //WebDriverManager.chromedriver().browserVersion(“83.0.4103”).setup();//setup a specific browser version  
+            //WebDriverManager.chromedriver().driverVersion(“85.0.4183.38”).setup();//setup a specific driver version
+            WebDriverManager.chromedriver().setup();//setup the latest browser and driver version, unless specified
             
             //For running Selenium Grid
             if (gridRunFlag.equalsIgnoreCase("true")) {
@@ -108,7 +166,7 @@ public class BaseTest {
                 options.addArguments("--window-size=1920,1080");
             }
             
-            WebDriverManager.firefoxdriver().setup();
+            WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
             
             //For running Selenium Grid
             if (gridRunFlag.equalsIgnoreCase("true")) {
@@ -132,6 +190,11 @@ public class BaseTest {
         		" launched with URL: " + urlText + 
         		" in Headless: " + headless + 
         		" mode with Selenium Grid Run: " + gridRunFlag);
+        //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
+    	Listeners.getTest().log(Status.INFO, "Browser: " + browser + 
+    			", " + "URL: " + urlText + 
+    			", " + "Headless Mode:" + headless + 
+    			", " + "Selenium Grid Run:" + gridRunFlag);
     }
 
     @AfterMethod

@@ -59,10 +59,10 @@ public class Listeners implements ITestListener {
         }
         
         //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
-    	getTest().log(Status.INFO, "Browser: " + BaseTest.prop.getProperty("browser") + 
+    	/*getTest().log(Status.INFO, "Browser: " + result.getTestContext().getCurrentXmlTest().getParameter("browser") + 
     			", " + "URL: " + BaseTest.prop.getProperty("url") + 
     			", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") + 
-    			", " + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
+    			", " + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));*/
     }
     
     @Override
