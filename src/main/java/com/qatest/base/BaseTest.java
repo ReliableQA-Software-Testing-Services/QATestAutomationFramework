@@ -118,13 +118,22 @@ public class BaseTest {
     @BeforeMethod
     @Parameters({"browser"})
     public void setUpTest(@Optional("chrome") String browser) throws IOException, 
+<<<<<<< HEAD
     														MalformedURLException, 
     														InterruptedException {
+=======
+																	MalformedURLException, 
+																	InterruptedException {
+>>>>>>> selenium_grid_feature
     	// Load config properties file (contains browser type, URL, etc.)
     	/*cr = new ConfigReader();
         prop = cr.init_prop();*/
 
         //String browserName = prop.getProperty("browser");
+<<<<<<< HEAD
+=======
+        
+>>>>>>> selenium_grid_feature
         String  urlText = prop.getProperty("url");
         String gridRunFlag = prop.getProperty("grid_run");
         WebDriver driver = null;
