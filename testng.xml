@@ -8,7 +8,7 @@
     </listeners>
 
     <test name="DataDriven-Login-Tests" parallel="methods" thread-count="3">
-    	<parameter name="browser" value="firefox"/>
+    	<!-- <parameter name="browser" value="firefox"/> -->
         <classes>
       		<class name="com.qatest.tests.LoginTest">
       			<methods>

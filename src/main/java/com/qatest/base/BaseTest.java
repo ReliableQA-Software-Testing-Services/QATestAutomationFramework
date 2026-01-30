@@ -31,8 +31,8 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 //import org.testng.xml.XmlTest;
 
-import com.aventstack.extentreports.Status;
-import com.qatest.utils.Listeners;
+//import com.aventstack.extentreports.Status;
+//import com.qatest.utils.Listeners;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -117,7 +117,9 @@ public class BaseTest {
     
     @BeforeMethod
     @Parameters({"browser"})
-    public void setUpTest(@Optional("chrome") String browser) throws IOException, MalformedURLException, InterruptedException {
+    public void setUpTest(@Optional("chrome") String browser) throws IOException, 
+    														MalformedURLException, 
+    														InterruptedException {
     	// Load config properties file (contains browser type, URL, etc.)
     	/*cr = new ConfigReader();
         prop = cr.init_prop();*/
@@ -135,8 +137,8 @@ public class BaseTest {
         if (browser.equalsIgnoreCase("chrome")) {
         	ChromeOptions options = new ChromeOptions();
         	//options.addArguments("--incognito");
-            options.addArguments("--start-maximized");
-            //options.addArguments("--disable-gpu");
+            	//options.addArguments("--start-maximized");
+            	//options.addArguments("--disable-gpu");
         	
         	//options.setCapability("os", "Windows");
         	//options.setCapability("os_version", "11");
@@ -191,10 +193,10 @@ public class BaseTest {
         		" in Headless: " + headless + 
         		" mode with Selenium Grid Run: " + gridRunFlag);
         //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
-    	Listeners.getTest().log(Status.INFO, "Browser: " + browser + 
+    	/*Listeners.getTest().log(Status.INFO, "Browser: " + browser + 
     			", " + "URL: " + urlText + 
     			", " + "Headless Mode:" + headless + 
-    			", " + "Selenium Grid Run:" + gridRunFlag);
+    			", " + "Selenium Grid Run:" + gridRunFlag);*/
     }
 
     @AfterMethod
