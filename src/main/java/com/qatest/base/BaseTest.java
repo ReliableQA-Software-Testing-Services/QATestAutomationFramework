@@ -70,7 +70,7 @@ public class BaseTest {
     
     @BeforeTest
     public void beforeTest() {
-        System.out.println("Setup an environment(staging/prod) before a <test> block in TestNG XML");
+        System.out.println("Setup an environment(staging/prod) or select a browser before a <test> block in TestNG XML");
     }
 
     @AfterTest
@@ -90,7 +90,7 @@ public class BaseTest {
     
     @BeforeClass
     public void beforeClass() {
-        System.out.println("Initialize Page Objects before class tests");
+        System.out.println("Initialize Page Objects or load test data before class tests");
     }
 
     @AfterClass
