@@ -118,22 +118,13 @@ public class BaseTest {
     @BeforeMethod
     @Parameters({"browser"})
     public void setUpTest(@Optional("chrome") String browser) throws IOException, 
-<<<<<<< HEAD
     														MalformedURLException, 
     														InterruptedException {
-=======
-																	MalformedURLException, 
-																	InterruptedException {
->>>>>>> selenium_grid_feature
     	// Load config properties file (contains browser type, URL, etc.)
     	/*cr = new ConfigReader();
         prop = cr.init_prop();*/
 
         //String browserName = prop.getProperty("browser");
-<<<<<<< HEAD
-=======
-        
->>>>>>> selenium_grid_feature
         String  urlText = prop.getProperty("url");
         String gridRunFlag = prop.getProperty("grid_run");
         WebDriver driver = null;
@@ -146,8 +137,8 @@ public class BaseTest {
         if (browser.equalsIgnoreCase("chrome")) {
         	ChromeOptions options = new ChromeOptions();
         	//options.addArguments("--incognito");
-            	//options.addArguments("--start-maximized");
-            	//options.addArguments("--disable-gpu");
+            options.addArguments("--start-maximized");
+            //options.addArguments("--disable-gpu");
         	
         	//options.setCapability("os", "Windows");
         	//options.setCapability("os_version", "11");
@@ -161,12 +152,13 @@ public class BaseTest {
             
             //WebDriverManager.chromedriver().browserVersion(“83.0.4103”).setup();//setup a specific browser version  
             //WebDriverManager.chromedriver().driverVersion(“85.0.4183.38”).setup();//setup a specific driver version
-            WebDriverManager.chromedriver().setup();//setup the latest browser and driver version, unless specified
+            //WebDriverManager.chromedriver().setup();//setup the latest browser and driver version, unless specified
             
             //For running Selenium Grid
             if (gridRunFlag.equalsIgnoreCase("true")) {
             	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
-            } else {
+            } else {//local run
+            	WebDriverManager.chromedriver().setup();
             	driver = new ChromeDriver(options);
             }    
         } else if (browser.equalsIgnoreCase("firefox")) {
@@ -177,12 +169,13 @@ public class BaseTest {
                 options.addArguments("--window-size=1920,1080");
             }
             
-            WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
+            //WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
             
             //For running Selenium Grid
             if (gridRunFlag.equalsIgnoreCase("true")) {
             	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
-            } else {
+            } else {//local run
+            	WebDriverManager.firefoxdriver().setup();
             	driver = new FirefoxDriver(options);
             }
         } else {
