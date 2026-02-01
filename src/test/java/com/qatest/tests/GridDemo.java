@@ -44,7 +44,7 @@ public class GridDemo extends BaseTest {
         
         //WebDriver remote_driver = new RemoteWebDriver(new URL("http://localhost:4445/wd/hub"), caps);
         WebDriver remote_driver = getDriver();
-        remote_driver.get("https://www.google.com");
+        remote_driver.navigate().to("https://www.google.com");
         remote_driver.findElement(By.name("q")).sendKeys("Learn Automation using Selenium Grid");
         
         Thread.sleep(5000);
