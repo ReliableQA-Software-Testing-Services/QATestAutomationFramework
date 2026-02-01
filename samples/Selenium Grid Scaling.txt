@@ -1,0 +1,15 @@
+One of the best features of Docker is that you don't have to manually add "Chrome-Node-2", "Chrome-Node-3", etc., to your YAML file. You can simply tell Docker to "scale" the existing service.
+
+Scaling Nodes Dynamically:
+To increase your parallel testing capacity on the fly, run the following command in your terminal:
+Bash> docker-compose up -d --scale chrome-node=5
+This command tells Docker to spin up 5 separate containers, each running a Chrome Node. Since they all link to the selenium-hub service, they will automatically register themselves.
+
+How the Grid Handles Scaling:
+When you scale your nodes, the Hub acts as a load balancer, distributing your parallel test suites across the available infrastructure.
+
+Command --------------------------------------------> Action -------------------------------> Result
+====================================================================================================================================================================
+docker-compose up -d --scale chrome-node=5 -----------> Creates 5 containers. ---------------> If each has SE_NODE_MAX_SESSIONS=4, you now have 20 concurrent slots.
+docker-compose ps ---------------> Lists all running nodes and their status.
+docker-compose down ---------------> Safely stops all nodes and the hub, cleaning up port bindings.

@@ -1,0 +1,38 @@
+version: "3"
+services:
+  selenium-hub:
+    image: selenium/hub:4.16.1
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      - GRID_MAX_SESSION=10
+      - GRID_TIMEOUT=120 # higher value gives the driver more breathing room to bind the port during heavy parallel spikes.
+
+  chrome-node:
+    image: selenium/node-chrome:4.16.1
+    shm_size: '2gb' # Size of shared memory; Increased size from 64MB to 2GB prevents the browser crashing in Docker
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442 # Selenium v4 uses ports 4442 and 4443 for the internal message bus
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=4 # Number of parallel Chrome tests
+    ports:
+      - "5555:5555" # Selenium Grid v4 requires the Hub to be able to talk back to the Node on its own port (usually 5555)
+
+  firefox-node:
+    image: selenium/node-firefox:4.16.1
+    shm_size: '2gb'
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=4 # Number of parallel Firefox tests
+    ports:
+      - "5556:5555"
