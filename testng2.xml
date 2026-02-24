@@ -8,6 +8,8 @@
     </listeners>
 
     <test name="Print-Tests" >
+    	<parameter name="browser" value="firefox"/>
+    	<parameter name="browser_version" value="123"/>
         <classes>
       		<class name="com.qatest.tests.LoginTest">
       			<methods>

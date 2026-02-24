@@ -5,12 +5,14 @@
     
     <test name="ChromeTests">
         <parameter name="browser" value="chrome"/>
+        <parameter name="browser_version" value="122"/>
         <classes>
             <class name="com.qatest.tests.GridDemo"/>
         </classes>
     </test>
     <test name="FirefoxTests">
         <parameter name="browser" value="firefox"/>
+        <parameter name="browser_version" value="123"/>
         <classes>
             <class name="com.qatest.tests.GridDemo"/>
         </classes>

@@ -116,14 +116,19 @@ public class BaseTest {
     }
     
     @BeforeMethod
-    @Parameters({"browser"})
-    public void setUpTest(@Optional("chrome") String browser) throws IOException, 
+    @Parameters({"browser", "browser_version"})
+    public void setUpTest(@Optional("chrome") String browser, 
+    					  @Optional("latest") String browser_version) throws IOException, 
     														MalformedURLException, 
     														InterruptedException {
     	// Load config properties file (contains browser type, URL, etc.)
     	/*cr = new ConfigReader();
         prop = cr.init_prop();*/
-
+    	
+    	//defaulting to chrome browser and the latest version of the browser
+    	if (browser == null || browser.isEmpty()) browser = "chrome";
+    	if (browser_version == null || browser_version.isEmpty()) browser_version = "latest";
+        
         //String browserName = prop.getProperty("browser");
         String  urlText = prop.getProperty("url");
         String gridRunFlag = prop.getProperty("grid_run");
@@ -150,15 +155,23 @@ public class BaseTest {
                 options.addArguments("--window-size=1920,1080");
             }
             
-            //WebDriverManager.chromedriver().browserVersion(“83.0.4103”).setup();//setup a specific browser version  
-            //WebDriverManager.chromedriver().driverVersion(“85.0.4183.38”).setup();//setup a specific driver version
+            //WebDriverManager.chromedriver().browserVersion("83.0.4103").setup();//setup a specific browser version  
+            //WebDriverManager.chromedriver().driverVersion("85.0.4183.38").setup();//setup a specific driver version
             //WebDriverManager.chromedriver().setup();//setup the latest browser and driver version, unless specified
             
             //For running Selenium Grid
             if (gridRunFlag.equalsIgnoreCase("true")) {
-            	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+            	//driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+            	
+            	//With WebDriverManager in Selenium Grid Nodes
+            	driver = WebDriverManager.chromedriver()
+            				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
+            				.capabilities(options)
+            				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
+            				.create();
             } else {//local run
             	WebDriverManager.chromedriver().setup();
+            	//WebDriverManager.chromedriver().browserVersion(browser_version).setup();
             	driver = new ChromeDriver(options);
             }    
         } else if (browser.equalsIgnoreCase("firefox")) {
@@ -173,9 +186,17 @@ public class BaseTest {
             
             //For running Selenium Grid
             if (gridRunFlag.equalsIgnoreCase("true")) {
-            	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+            	//driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+            	
+            	//With WebDriverManager in Selenium Grid Nodes
+            	driver = WebDriverManager.firefoxdriver()
+            				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
+            				.capabilities(options)
+            				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
+            				.create();
             } else {//local run
             	WebDriverManager.firefoxdriver().setup();
+            	//WebDriverManager.firefoxdriver().browserVersion(browser_version).setup();
             	driver = new FirefoxDriver(options);
             }
         } else {
@@ -190,10 +211,11 @@ public class BaseTest {
         getDriver().manage().window().maximize();
         getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         getDriver().get(urlText);
-        System.out.println("Browser: " + browser + 
-        		" launched with URL: " + urlText + 
-        		" in Headless: " + headless + 
-        		" mode with Selenium Grid Run: " + gridRunFlag);
+        System.out.println("Browser:" + browser + 
+        		" with version:" + browser_version +
+        		" launched for URL:" + urlText + 
+        		" in Headless:" + headless + 
+        		" mode with Selenium Grid Run:" + gridRunFlag);
         //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
     	/*Listeners.getTest().log(Status.INFO, "Browser: " + browser + 
     			", " + "URL: " + urlText + 
@@ -202,14 +224,13 @@ public class BaseTest {
     }
 
     @AfterMethod
-    @Parameters({"browser"})
-    public void tearDownTest(@Optional("chrome") String browser) {
+    public void tearDownTest() {
         /*if (driver != null) {
             driver.quit();
         }*/
     	if (getDriver() != null) {
         getDriver().quit();
-        System.out.println("Browser: " + browser + " closed.");
+        System.out.println("Browser closed.");
         		
         tldriver.remove(); // This is necessary to clean up the thread
     	}

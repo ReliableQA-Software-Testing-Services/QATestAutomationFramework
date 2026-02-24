@@ -59,12 +59,16 @@ public class Listeners implements ITestListener {
         }
         
         String browsr = result.getTestContext().getCurrentXmlTest().getParameter("browser");
-        
         //defaulting to chrome browser
         if (browsr == null || browsr.isEmpty()) browsr = "chrome";
         
+        String browsr_version = result.getTestContext().getCurrentXmlTest().getParameter("browser_version");
+        //defaulting to the latest version of the browser
+        if (browsr_version == null || browsr_version.isEmpty()) browsr_version = "latest";
+        
         //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
     	getTest().log(Status.INFO, "Browser: " + browsr + 
+    			", " + "Browser Version: " + browsr_version + 
     			", " + "URL: " + BaseTest.prop.getProperty("url") + 
     			", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") + 
     			", " + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
