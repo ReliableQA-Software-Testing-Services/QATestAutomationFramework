@@ -61,7 +61,7 @@ From a Node machine(use "docker exec -it <node container_id/name> bash" command)
 
 Bash>
 curl http://<hub-ip-address>:4444/status
-If you get a JSON response showing ready: true, your network path is clear.
+If you get a JSON response showing ready: true, your network path is clear. Please note to provide a hub-ip-address from vEthernet(WSL) network, neither "0.0.0.0" nor "localhost".
 
 Step 5: TestNG + RemoteWebDriver Integration -->In your test base class
 public class BaseTest {
@@ -76,7 +76,7 @@ public class BaseTest {
         } else if (browser.equalsIgnoreCase("firefox")) {
             caps.setBrowserName("firefox");
         }
-        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), caps);
+        driver = new RemoteWebDriver(new URL("http://172.0.2.21:4444/wd/hub"), caps);//provide Selenium Hub's ip-address from vEthernet(WSL) network, neither "0.0.0.0" nor "localhost"
     }
 
     @AfterMethod
