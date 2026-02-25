@@ -178,8 +178,8 @@ public class BaseTest {
         	FirefoxOptions options = new FirefoxOptions();
             
             if (headless.equalsIgnoreCase("true")) {
-                options.addArguments("--headless=new");
-                options.addArguments("--window-size=1920,1080");
+                options.addArguments("-headless");
+                //options.addArguments("-window-size=1920,1080");
             }
             
             //WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
