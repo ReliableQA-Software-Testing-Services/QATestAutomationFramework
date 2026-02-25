@@ -36,8 +36,10 @@ public class Listeners implements ITestListener {
     public void onStart(ITestContext context) {
     	// Get the suite name in the testng xml file
         String suiteName = context.getSuite().getName();
+        String suiteTestName =context.getCurrentXmlTest().getName();
         //Below is just for user information
-        System.out.println("TestNG TestSuite: " + suiteName);
+        //System.out.println("TestNG TestSuite: " + suiteName);
+        System.out.println("Started a test in TestNG TestSuite: " + suiteName + " --> " + suiteTestName);
     }
     
     @Override
@@ -127,6 +129,11 @@ public class Listeners implements ITestListener {
     @Override
     public void onFinish(ITestContext context) {
         extent.flush(); // This is mandatory to generate the report file
+        
+        String suiteName = context.getSuite().getName();
+        String suiteTestName =context.getCurrentXmlTest().getName();
+        //Below is just for user information
+        System.out.println("Finished a test in TestNG TestSuite: " + suiteName + " --> " + suiteTestName);
         
         //Below is just for user information
         /*System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the individual test results.");
