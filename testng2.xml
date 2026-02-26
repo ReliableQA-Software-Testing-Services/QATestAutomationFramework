@@ -9,7 +9,7 @@
 
     <test name="Print-Tests" >
     	<parameter name="browser" value="firefox"/>
-    	<parameter name="browser_version" value="123"/>
+    	<parameter name="browser_version" value="latest"/>
         <classes>
       		<class name="com.qatest.tests.LoginTest">
       			<methods>
