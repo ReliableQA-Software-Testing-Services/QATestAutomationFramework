@@ -16,6 +16,7 @@ import com.qatest.base.BaseTest;
 import com.qatest.pages.LoginPage;
 import com.qatest.utils.ExcelUtil;
 import com.qatest.utils.Listeners;
+import com.qatest.utils.RetryAnalyzer;
 import com.qatest.utils.ScreenshotUtils;
 
 /**
@@ -57,7 +58,7 @@ public class LoginTest extends BaseTest {
         return ExcelUtil.getTestDataAsMap(excelPath, "td_loginpage", "run_flag", "Y"); 
 	}
 
-	@Test(dataProvider = "LoginData")
+	@Test(dataProvider = "LoginData", retryAnalyzer = RetryAnalyzer.class)
 	public void loginTest(Map<String, String> data) {
 	    // You only have one parameter, but you can access all data using Map:
 	    //getDriver().get(data.get("URL"));
