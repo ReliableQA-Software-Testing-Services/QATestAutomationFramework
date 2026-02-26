@@ -208,8 +208,15 @@ public class BaseTest {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.get(prop.getProperty("url"));*/
         
+        // Fetch timeouts from properties and convert to Long
+        long pageLoad = Long.parseLong(prop.getProperty("timeout.pageLoad"));
+        long script = Long.parseLong(prop.getProperty("timeout.script"));
+        // Apply Global Timeouts
+        getDriver().manage().timeouts().pageLoadTimeout(Duration.ofSeconds(pageLoad));
+        getDriver().manage().timeouts().scriptTimeout(Duration.ofSeconds(script));
+        
         getDriver().manage().window().maximize();
-        getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        //getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         getDriver().get(urlText);
         System.out.println("Browser:" + browser + 
         		" with version:" + browser_version +
