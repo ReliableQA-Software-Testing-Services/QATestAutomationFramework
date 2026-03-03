@@ -1,0 +1,47 @@
+Reference: https://github.com/SeleniumHQ/docker-selenium
+
+Quick start a Selenium Grid:
+1. Start a Firefox container
+$ docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" selenium/standalone-firefox:4.41.0-20260222
+
+2. Point your WebDriver tests to http://localhost:4444
+
+3. That's it!
+
+4. (Optional) To see what is happening inside the container, head to http://localhost:7900/?autoconnect=1&resize=scale&password=secret.
+
+For more details about visualising the container activity, check the Debugging section as below:
+1. Using a VNC client
+The VNC server is listening to port 5900, you can use a VNC client and connect to it. Feel free to map port 5900 to any free external port that you wish.
+
+The internal 5900 port remains the same because that is the configured port for the VNC server running inside the container. You can override it with the SE_VNC_PORT environment variable in case you want to use --net=host.
+
+Here is an example with the standalone images, the same concept applies to the node images.
+$ docker run -d -p 4444:4444 -p 5900:5900 --shm-size="2g" selenium/standalone-chrome:4.41.0-20260222
+$ docker run -d -p 4445:4444 -p 5901:5900 --shm-size="2g" selenium/standalone-edge:4.41.0-20260222
+$ docker run -d -p 4446:4444 -p 5902:5900 --shm-size="2g" selenium/standalone-firefox:4.41.0-20260222
+
+Then, you would use in your VNC client:
+-Port 5900 to connect to the Chrome container
+-Port 5901 to connect to the Edge container
+-Port 5902 to connect to the Firefox container
+
+2. Using your browser (no VNC client is needed)
+This project uses noVNC to allow users to inspect visually container activity with their browser. This might come in handy if you cannot install a VNC client on your machine. Port 7900 is used to start noVNC, so you will need to connect to that port with your browser.
+
+Similarly to the previous section, feel free to map port 7900 to any free external port that you wish. You can also override it with the SE_NO_VNC_PORT environment variable in case you want to use --net=host.
+
+Here is an example with the standalone images, the same concept applies to the node images.
+$ docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" selenium/standalone-chrome:4.41.0-20260222
+$ docker run -d -p 4445:4444 -p 7901:7900 --shm-size="2g" selenium/standalone-edge:4.41.0-20260222
+$ docker run -d -p 4446:4444 -p 7902:7900 --shm-size="2g" selenium/standalone-firefox:4.41.0-20260222
+
+Then, you would use in your browser:
+-http://localhost:7900/ to connect to the Chrome container
+-http://localhost:7901/ to connect to the Edge container
+-http://localhost:7902/ to connect to the Firefox container
+
+3. Disabling VNC
+If You are running low on resources, or simply don't need to inspect running sessions, it is possible to not run VNC at all. Just set SE_START_VNC=false environment variable on the grid startup.
+
+docker run -d -p 4444:4444 -e SE_START_VNC=false --shm-size="2g" selenium/standalone-firefox:4.41.0-20260222

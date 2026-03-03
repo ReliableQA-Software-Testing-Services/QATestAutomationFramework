@@ -52,15 +52,17 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=4 # Number of parallel Firefox tests
     ports:
-      - "5556:5555"
+      - "5556:5556"
 
 Step 3: Start the grid -->Run "docker-compose -f /path/to/docker-compose.yml up -d" command and access Grid UI at http://localhost:4444/ui
 
-Step 4: Test via Browser (The "Sanity" Check)
+Step 4: Test via Browser (The "Sanity" Check): 
+Run "http://localhost:4444/wd/hub/status" in the browser
+OR
 From a Node machine(use "docker exec -it <node container_id/name> bash" command), try to access the Hub's status page via curl:
-
 Bash>
 curl http://<hub-ip-address>:4444/status
+
 If you get a JSON response showing ready: true, your network path is clear. Please note to provide a hub-ip-address from vEthernet(WSL) network, neither "0.0.0.0" nor "localhost".
 
 Step 5: TestNG + RemoteWebDriver Integration -->In your test base class

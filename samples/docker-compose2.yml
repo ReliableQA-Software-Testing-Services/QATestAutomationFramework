@@ -35,4 +35,4 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=4 # Number of parallel Firefox tests
     ports:
-      - "5556:5555"
+      - "5556:5556"
