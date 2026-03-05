@@ -8,10 +8,10 @@ This QA Test Automation Data-driven framework is consisting of below components(
 
 3. test_results: Test Results are generated with timestamp for each run. These are extent reports with screenshots.
 
-4. test_config: A global config file resides here, where you can set the test environment(QA, UAT, etc), application URL, user details, run mode(GUI/Headless), global variables, etc.
+4. test_config: A global config file resides here, where you can set the test environment(QA, UAT, etc), application URL, test user details, run mode(GUI/Headless), hub URL for Selenium Grid, global variables, global timeout settings, etc.
 
-5. test_cases: You can put your test cases in excel sheets here. These testcases are automated using Selenium WebDriver with Java in the project's src\test\java folder.
+5. test_cases: You can put your test cases in excel sheets here. These testcases are automated using Selenium WebDriver with Java in the project's src\test\java\com\qatest\tests folder.
 
 
 How to run the automated test cases:
--From CLI, run "mvn clean test" command to invoke the automated test execution.
+-From CLI, run "mvn clean test" command to invoke the automated test execution. You can also specify the TestNG testsuite XML filepath(comma-seperated) with "-Dsurefire.suiteXmlFiles=<filepath>" argument for "mvn clean test" command. If not specified, the TestNG testsuite XML file "testng.xml"(located at the project-root level) is used for "mvn clean test" command.
