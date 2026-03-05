@@ -17,13 +17,13 @@ import org.openqa.selenium.support.PageFactory;
 //public class LoginPage extends BaseTest {
 public class LoginPage {
     // 1. Locators using Page Factory
-    @FindBy(name = "login")
+    @FindBy(name = "email")
     private WebElement txtUsername;
 
     @FindBy(name = "password")
     private WebElement txtPassword;
 
-    @FindBy(xpath = "//input[@value='Sign in']")
+    @FindBy(xpath = "//button[@value='Log In']")
     private WebElement btnLogin;
 
     @FindBy(id = "flash")
