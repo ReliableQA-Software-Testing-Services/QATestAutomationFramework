@@ -58,7 +58,8 @@ public class LoginTest extends BaseTest {
         return ExcelUtil.getTestDataAsMap(excelPath, "td_loginpage", "run_flag", "Y"); 
 	}
 
-	@Test(dataProvider = "LoginData", retryAnalyzer = RetryAnalyzer.class)
+	//@Test(dataProvider = "LoginData", retryAnalyzer = RetryAnalyzer.class)
+	@Test(dataProvider = "LoginData")
 	public void loginTest(Map<String, String> data) {
 	    // You only have one parameter, but you can access all data using Map:
 	    //getDriver().get(data.get("URL"));
