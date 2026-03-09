@@ -15,4 +15,8 @@ This QA Test Automation Data-driven framework is consisting of below components(
 
 How to run the automated test cases:
 
-From CLI, run "mvn clean test" command at the project-root level(e.g. from "qa-automation-framework-2025" folder) to invoke the automated test execution. You can also specify the TestNG testsuite XML filepath(comma-seperated) with "-Dsurefire.suiteXmlFiles=<filepath1>, <filepath2>,...<filepathN>" argument for "mvn clean test" command. If not specified, the TestNG testsuite XML file "testng.xml"(located at the project-root level) is used for "mvn clean test" command.
+From CLI, run "mvn clean test" command at the project-root level(e.g. from "qa-automation-framework-2025" folder) to invoke the automated test execution.
+
+You can also specify the TestNG testsuite XML filepath(comma-seperated) 
+with "-Dsurefire.suiteXmlFiles=<filepath1>, <filepath2>,...<filepathN>" argument for "mvn clean test" command.
+If not specified, the TestNG testsuite XML file "testng.xml"(located at the project-root level) is used for "mvn clean test" command.
