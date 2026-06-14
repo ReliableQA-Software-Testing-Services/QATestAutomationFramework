@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+
 import java.io.File;
 import java.io.IOException;
 //import java.nio.file.Files;
@@ -21,6 +22,8 @@ import java.io.IOException;
 //import java.time.LocalDateTime;
 //import java.time.format.DateTimeFormatter;
 //import java.util.Date;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.SessionId;
 
 public class ScreenshotUtils {
 
@@ -29,6 +32,10 @@ public class ScreenshotUtils {
         	//String timestamp = new SimpleDateFormat("yyyyMmmrdd_HHMMSS").format(new Date());
         	
             File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            //Capture current WebDriver session id
+            SessionId session = ((RemoteWebDriver) driver).getSessionId();
+            String currentSessionID = session.toString();
+            
             String timestamp = DateTimeUtil.getCurrentTimestamp(); //You can also use in-built function System.currentTimeMillis()
             //String destPath = "target/screenshots/" + screenshotName + ".png";
             //String destPath = System.getProperty("user.dir") + "/test_results/screenshots/" + screenshotName + "_" + timestamp + ".png";
@@ -41,7 +48,7 @@ public class ScreenshotUtils {
             String destPath = projectPath + File.separator + "test_results" + 
             					File.separator + "extent-reports" +
             					File.separator + "screenshots" + 
-            					File.separator + "Screenshot_" + timestamp + "_" + screenshotName + ".jpeg";
+            					File.separator + "Screenshot_" + currentSessionID + "_" + timestamp + "_" + screenshotName + ".jpeg";
             
             //Files.createDirectories(Paths.get("target/screenshots/"));
             //Files.copy(srcFile.toPath(), Paths.get(destPath));

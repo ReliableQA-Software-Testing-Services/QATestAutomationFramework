@@ -102,12 +102,20 @@ public class Listeners implements ITestListener {
         	//String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), result.getMethod().getMethodName());
         	WebDriver driver = BaseTest.getDriver();
         	String screenshotPath = ScreenshotUtils.captureScreenshot(driver, result.getMethod().getMethodName());
+        	String htmlTooltipForScreenshot = "<span style='"
+    								+ "position: relative; "
+    								+ "cursor: pointer; "
+    								+ "color: red; "
+    								+ "font-weight: bold;' "
+    								+ "title='File Path: " + screenshotPath.replace("\\", "\\\\") + "'>"
+    								+ "Hover over here to see the file path "
+    								+ "</span>";
 	        
 	        //getTest().addScreenCaptureFromPath(screenshotPath);
 	        //getTest().fail("Test Failed - Screenshot attached:", 
 	        //        MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
-	        getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure</font></b>", 
-	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+	        getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure: Click on it to open</font></b>", 
+	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath, htmlTooltipForScreenshot).build());
         } catch (Exception e) {
         	getTest().log(Status.INFO, "Failed to capture screenshot: " + e.getMessage());
         }
