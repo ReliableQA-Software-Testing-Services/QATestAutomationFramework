@@ -5,6 +5,8 @@ package com.qatest.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 
 /**
  * @author Divyang
@@ -32,5 +34,12 @@ public class DateTimeUtil {
         return timestamp;
 
 	}
-
+	
+	public static String getCurrentTimestampInUTC(){
+		// Get current date and time in UTC timezone
+		String utcCurrentDatetime = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+	
+		//System.out.println("Current UTC time is: " + utcCurrentDatetime);
+		return utcCurrentDatetime;
+	}
 }

@@ -37,7 +37,8 @@ public class ScreenshotUtils {
             SessionId session = ((RemoteWebDriver) driver).getSessionId();
             String currentSessionID = session.toString();
             
-            String timestamp = DateTimeUtil.getCurrentTimestamp(); //You can also use in-built function System.currentTimeMillis()
+            //String timestamp = DateTimeUtil.getCurrentTimestamp(); //You can also use in-built function System.currentTimeMillis()
+            String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
             //String destPath = "target/screenshots/" + screenshotName + ".png";
             //String destPath = System.getProperty("user.dir") + "/test_results/screenshots/" + screenshotName + "_" + timestamp + ".png";
             //String destPath = System.getProperty("user.dir") + "/test_results/screenshots/" + "Screenshot_" + timestamp + "_" + screenshotName + ".jpeg";
