@@ -34,7 +34,7 @@ import org.testng.annotations.Parameters;
 //import com.aventstack.extentreports.Status;
 //import com.qatest.utils.Listeners;
 
-//import io.github.bonigarcia.wdm.WebDriverManager; //Selenium 4 eliminates the need for WebDriverManager
+//import io.github.bonigarcia.wdm.WebDriverManager; //Selenium Manager(in-built with Selenium 4 onwards) eliminates the need for WebDriverManager
 
 /**
  * @author Divyang
