@@ -101,7 +101,8 @@ public class Listeners implements ITestListener {
         try {
         	//String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), result.getMethod().getMethodName());
         	WebDriver driver = BaseTest.getDriver();
-        	String screenshotPath = ScreenshotUtils.captureScreenshot(driver, result.getMethod().getMethodName());
+        	//String screenshotPath = ScreenshotUtils.captureScreenshot(driver, result.getMethod().getMethodName());
+        	String screenshotPath = ScreenshotUtils.captureScreenshot(driver);
         	String htmlTooltipForScreenshot = "<span style='"
     								+ "position: relative; "
     								+ "cursor: pointer; "

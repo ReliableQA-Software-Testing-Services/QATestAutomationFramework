@@ -27,7 +27,8 @@ import org.openqa.selenium.remote.SessionId;
 
 public class ScreenshotUtils {
 
-    public static String captureScreenshot(WebDriver driver, String screenshotName) {
+    //public static String captureScreenshot(WebDriver driver, String screenshotName) {
+	public static String captureScreenshot(WebDriver driver) {
         try {
         	//String timestamp = new SimpleDateFormat("yyyyMmmrdd_HHMMSS").format(new Date());
         	
@@ -48,7 +49,8 @@ public class ScreenshotUtils {
             String destPath = projectPath + File.separator + "test_results" + 
             					File.separator + "extent-reports" +
             					File.separator + "screenshots" + 
-            					File.separator + "Screenshot_" + currentSessionID + "_" + timestamp + "_" + screenshotName + ".jpeg";
+            					//File.separator + "Screenshot_" + currentSessionID + "_" + timestamp + "_" + screenshotName + ".jpeg";
+        						File.separator + "Screenshot_" + currentSessionID + "_" + timestamp + ".jpeg";
             
             //Files.createDirectories(Paths.get("target/screenshots/"));
             //Files.copy(srcFile.toPath(), Paths.get(destPath));

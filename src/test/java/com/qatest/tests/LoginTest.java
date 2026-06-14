@@ -68,7 +68,8 @@ public class LoginTest extends BaseTest {
 	    //loginPage.login(data.get("username"), "");
 	    loginPage.enterUsername(data.get("username"));
 	    
-	    String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), data.get("username"));
+	    //String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), data.get("username"));
+	    String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver());
 	    Listeners.getTest().log(Status.INFO, "User: " + data.get("username"), 
 				MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
 	    
@@ -86,7 +87,8 @@ public class LoginTest extends BaseTest {
 	public void print_msg() {
 		System.out.println("Hi, Divyang!");
 		
-		String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), "test0");
+		//String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), "test0");
+		String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver());
 		//Listeners.getTest().addScreenCaptureFromPath(screenshotPath);
 		
 		//Fail intentionally
