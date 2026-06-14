@@ -34,7 +34,7 @@ import org.testng.annotations.Parameters;
 //import com.aventstack.extentreports.Status;
 //import com.qatest.utils.Listeners;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+//import io.github.bonigarcia.wdm.WebDriverManager; //Selenium 4 eliminates the need for WebDriverManager
 
 /**
  * @author Divyang
@@ -161,16 +161,16 @@ public class BaseTest {
             
             //For running Selenium Grid
             if (gridRunFlag.equalsIgnoreCase("true")) {
-            	//driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+            	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
             	
             	//With WebDriverManager in Selenium Grid Nodes
-            	driver = WebDriverManager.chromedriver()
+            	/*driver = WebDriverManager.chromedriver()
             				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
             				.capabilities(options)
             				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
-            				.create();
+            				.create();*/
             } else {//local run
-            	WebDriverManager.chromedriver().setup();
+            	//WebDriverManager.chromedriver().setup();
             	//WebDriverManager.chromedriver().browserVersion(browser_version).setup();
             	driver = new ChromeDriver(options);
             }    
@@ -186,16 +186,16 @@ public class BaseTest {
             
             //For running Selenium Grid
             if (gridRunFlag.equalsIgnoreCase("true")) {
-            	//driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+            	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
             	
             	//With WebDriverManager in Selenium Grid Nodes
-            	driver = WebDriverManager.firefoxdriver()
+            	/*driver = WebDriverManager.firefoxdriver()
             				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
             				.capabilities(options)
             				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
-            				.create();
+            				.create();*/
             } else {//local run
-            	WebDriverManager.firefoxdriver().setup();
+            	//WebDriverManager.firefoxdriver().setup();
             	//WebDriverManager.firefoxdriver().browserVersion(browser_version).setup();
             	driver = new FirefoxDriver(options);
             }
