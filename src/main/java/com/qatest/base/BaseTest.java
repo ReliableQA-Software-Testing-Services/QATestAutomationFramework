@@ -9,6 +9,7 @@ import java.net.URL;
 import java.time.Duration;
 
 import java.util.Properties;
+import java.util.TimeZone;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -41,6 +42,10 @@ import org.testng.annotations.Parameters;
  *
  */
 public class BaseTest {
+	static {
+		//set the global timezone to UTC (or "America/New_York", "Asia/Kolkata", "Japan/Tokyo", etc)
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	}
     //protected WebDriver driver; //This is for non-parallel execution
 	//ThreadLocal creates a separate driver instance for every thread, which is needed for parallel execution
     private static ThreadLocal<WebDriver> tldriver = new ThreadLocal<>();

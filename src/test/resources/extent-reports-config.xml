@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extentreports>
+  <configuration>
+    <theme>dark</theme>
+
+    <encoding>UTF-8</encoding>
+
+    <protocol>https</protocol>
+
+    <documentTitle>Test Automation Execution Report</documentTitle>
+
+    <reportName>Regression Test Results</reportName>
+
+    <timeStampFormat>yyyy-MM-dd HH:mm:ss z</timeStampFormat>
+  </configuration>
+</extentreports>

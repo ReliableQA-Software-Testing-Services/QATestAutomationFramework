@@ -4,6 +4,7 @@
 package com.qatest.utils;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
@@ -28,8 +29,18 @@ public class ExtentReportsManager {
             		File.separator + "TestReport_" + timestamp + ".html";
             //String path = System.getProperty("user.dir") + File.separator + "reports" + File.separator + "index.html";
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter(sparkReportFilePath);
-            sparkReporter.config().setReportName("QA Automation Results");
-            sparkReporter.config().setDocumentTitle("Test Execution Report");
+            /*sparkReporter.config().setReportName("QA Automation Results");
+            sparkReporter.config().setDocumentTitle("Test Execution Report");*/
+            // Use an extent-reports configuration XML to format the HTML test results(e.g. timestamp format)
+            String extentConfigFilePath = projectPath + File.separator + "src" + 
+            		File.separator + "test" +
+            		File.separator + "resources" +
+            		File.separator + "extent-reports-config.xml";
+            try {
+            	sparkReporter.loadXMLConfig(extentConfigFilePath);
+            } catch (IOException e) {
+            	e.printStackTrace();
+            }
                         
             /*String emailReportFilePath = projectPath + File.separator + "test_results" + 
     		File.separator + "extent-reports" +           
