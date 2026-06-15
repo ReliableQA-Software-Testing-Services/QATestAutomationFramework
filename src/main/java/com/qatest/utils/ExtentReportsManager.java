@@ -19,7 +19,8 @@ public class ExtentReportsManager {
         if (extent == null) {
         	// System.getProperty("user.dir") returns the current project root path
             String projectPath = System.getProperty("user.dir");
-            String timestamp = DateTimeUtil.getCurrentTimestamp();
+            //String timestamp = DateTimeUtil.getCurrentTimestamp();
+            String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
             
             // Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
             String sparkReportFilePath = projectPath + File.separator + "test_results" + 
