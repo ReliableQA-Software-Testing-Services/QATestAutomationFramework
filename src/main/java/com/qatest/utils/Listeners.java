@@ -22,7 +22,7 @@ import com.qatest.base.BaseTest;
  */
 //public class Listeners extends BaseTest implements ITestListener {
 public class Listeners implements ITestListener {
-	private static ExtentReports extent = ExtentReportsManager.getInstance();
+	public static ExtentReports extent = ExtentReportsManager.getInstance();
     //ExtentTest test;
 	// ThreadLocal creates a unique instance of ExtentTest for every thread
     private static ThreadLocal<ExtentTest> extentTest = new ThreadLocal<ExtentTest>();
@@ -45,8 +45,14 @@ public class Listeners implements ITestListener {
     @Override
     public void onTestStart(ITestResult result) {
     	ExtentTest test = extent.createTest(result.getMethod().getMethodName());
-    	// Assigning the suite name as a category for easy filtering
-        test.assignCategory(result.getTestContext().getSuite().getName());
+    	// Assigning the suite name as a category for easy filtering in the test reports
+        //test.assignCategory(result.getTestContext().getSuite().getName());
+        // Assigning browser name as a category for easy filtering in the test reports
+    	String browser_name = result.getTestContext().getCurrentXmlTest().getParameter("browser");
+    	//defaulting to chrome browser and the latest version of the browser
+    	if (browser_name == null || browser_name.isEmpty()) browser_name = "chrome";
+        test.assignCategory(browser_name);
+        
     	extentTest.set(test); // Store the test object for the current thread
     	
     	System.out.println("Started Test: " + result.getMethod().getMethodName());
@@ -109,14 +115,16 @@ public class Listeners implements ITestListener {
     								+ "color: red; "
     								+ "font-weight: bold;' "
     								+ "title='File Path: " + screenshotPath.replace("\\", "\\\\") + "'>"
-    								+ "Hover over here to see the file path "
+    								+ "Hover over here to see the filepath"
     								+ "</span>";
 	        
 	        //getTest().addScreenCaptureFromPath(screenshotPath);
 	        //getTest().fail("Test Failed - Screenshot attached:", 
 	        //        MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+	        /*getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure: Click on it to open</font></b>", 
+	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath, htmlTooltipForScreenshot).build());*/
 	        getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure: Click on it to open</font></b>", 
-	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath, htmlTooltipForScreenshot).build());
+	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
         } catch (Exception e) {
         	getTest().log(Status.INFO, "Failed to capture screenshot: " + e.getMessage());
         }

@@ -30,6 +30,8 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
+
+import com.qatest.utils.ExtentReportsManager;
 //import org.testng.xml.XmlTest;
 
 //import com.aventstack.extentreports.Status;
@@ -43,7 +45,7 @@ import org.testng.annotations.Parameters;
  */
 public class BaseTest {
 	static {
-		//set the global timezone to UTC (or "America/New_York", "Asia/Kolkata", "Japan/Tokyo", etc)
+		//set the default JVM timezone to UTC(or "America/New_York", "Asia/Kolkata", "Japan/Tokyo", etc) to adopt it across all global test runners
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	}
     //protected WebDriver driver; //This is for non-parallel execution
@@ -114,10 +116,14 @@ public class BaseTest {
     }
 */
     @BeforeSuite
-    public void setUpSuite() {
+	@Parameters({"env"})
+    public void setUpSuite(String envName) {
     	// Load config properties file (contains URL, Headless Mode, Grid Run Flag, etc.)
     	cr = new ConfigReader();
         prop = cr.init_prop();
+
+		// Print test environment in the dashboard of extent-reports
+        ExtentReportsManager.setSystemInfoDynamically("Parallel Run Environment", envName);
     }
     
     @BeforeMethod
@@ -133,6 +139,9 @@ public class BaseTest {
     	//defaulting to chrome browser and the latest version of the browser
     	if (browser == null || browser.isEmpty()) browser = "chrome";
     	if (browser_version == null || browser_version.isEmpty()) browser_version = "latest";
+    	
+    	// Print browser name in the dashboard of extent-reports
+        //ExtentReportsManager.setSystemInfoDynamically("Browser", browser);
         
         //String browserName = prop.getProperty("browser");
         String  urlText = prop.getProperty("url");

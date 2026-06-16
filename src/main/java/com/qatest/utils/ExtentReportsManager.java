@@ -8,13 +8,14 @@ import java.io.IOException;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import java.util.TimeZone;
 
 /**
  * @author Divyang
  *
  */
 public class ExtentReportsManager {
-	public static ExtentReports extent;
+	private static ExtentReports extent;
 	
     public static ExtentReports getInstance() {
         if (extent == null) {
@@ -54,8 +55,18 @@ public class ExtentReportsManager {
             extent.attachReporter(sparkReporter, emailReporter);*/
             extent.setSystemInfo("Tester", "QA Engineer");
             extent.setSystemInfo("Environment", "QA");
-            
+            extent.setSystemInfo("Target Timezone", TimeZone.getDefault().getID());//Dynamically logs the JVM timezone
+            extent.setSystemInfo("User Name", System.getProperty("user.name"));
+            extent.setSystemInfo("OS", System.getProperty("os.name"));
+            extent.setSystemInfo("Java Version", System.getProperty("java.version"));
         }
         return extent;
     }
+    
+    public static void setSystemInfoDynamically(String property_name, String property_value) {
+    	if(Listeners.extent != null) {
+			Listeners.extent.setSystemInfo(property_name, property_value);
+		}
+    }
+
 }
