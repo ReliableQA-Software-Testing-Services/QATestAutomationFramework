@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -18,6 +19,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 //import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.AfterMethod;
@@ -129,7 +131,8 @@ public class BaseTest {
     @BeforeMethod
     @Parameters({"browser", "browser_version"})
     public void setUpTest(@Optional("chrome") String browser, 
-    					  @Optional("latest") String browser_version) throws IOException, 
+    					  @Optional("latest") String browser_version, 
+    					  ITestContext context) throws IOException, 
     														MalformedURLException, 
     														InterruptedException {
     	// Load config properties file (contains browser type, URL, etc.)
@@ -232,6 +235,16 @@ public class BaseTest {
         getDriver().manage().window().maximize();
         //getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         getDriver().get(urlText);
+        
+        // Now get the browser name and version at run-time and store them in a test context of TestNG
+        Capabilities caps = ((RemoteWebDriver) getDriver()).getCapabilities();
+        browser = caps.getBrowserName();
+        browser_version = caps.getBrowserVersion();
+        
+        // Store in TestNG context (thread-safe per test run)
+        context.setAttribute("browserName", browser);
+        context.setAttribute("browserVersion", browser_version);
+        
         System.out.println("Browser:" + browser + 
         		" with version:" + browser_version +
         		" launched for URL:" + urlText + 

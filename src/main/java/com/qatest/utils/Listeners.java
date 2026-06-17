@@ -44,14 +44,22 @@ public class Listeners implements ITestListener {
     
     @Override
     public void onTestStart(ITestResult result) {
-    	ExtentTest test = extent.createTest(result.getMethod().getMethodName());
+    	String browserName = (String) result.getTestContext().getAttribute("browserName");
+        String browserVersion = (String) result.getTestContext().getAttribute("browserVersion");
+
+        ExtentTest test = extent.createTest(result.getMethod().getMethodName())
+                .assignCategory(browserName) // categorize by browser
+                .assignDevice(browserVersion); // show version per test
+
+    	//ExtentTest test = extent.createTest(result.getMethod().getMethodName());
+    	
     	// Assigning the suite name as a category for easy filtering in the test reports
         //test.assignCategory(result.getTestContext().getSuite().getName());
         // Assigning browser name as a category for easy filtering in the test reports
-    	String browser_name = result.getTestContext().getCurrentXmlTest().getParameter("browser");
+    	//String browser_name = result.getTestContext().getCurrentXmlTest().getParameter("browser");
     	//defaulting to chrome browser and the latest version of the browser
-    	if (browser_name == null || browser_name.isEmpty()) browser_name = "chrome";
-        test.assignCategory(browser_name);
+    	//if (browser_name == null || browser_name.isEmpty()) browser_name = "chrome";
+        //test.assignCategory(browser_name);
         
     	extentTest.set(test); // Store the test object for the current thread
     	
@@ -66,17 +74,17 @@ public class Listeners implements ITestListener {
             }
         }
         
-        String browsr = result.getTestContext().getCurrentXmlTest().getParameter("browser");
+        /*String browsr = result.getTestContext().getCurrentXmlTest().getParameter("browser");
         //defaulting to chrome browser
         if (browsr == null || browsr.isEmpty()) browsr = "chrome";
         
         String browsr_version = result.getTestContext().getCurrentXmlTest().getParameter("browser_version");
         //defaulting to the latest version of the browser
-        if (browsr_version == null || browsr_version.isEmpty()) browsr_version = "latest";
-        
+        if (browsr_version == null || browsr_version.isEmpty()) browsr_version = "latest";*/
+                
         //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
-    	getTest().log(Status.INFO, "Browser: " + browsr + 
-    			", " + "Browser Version: " + browsr_version + 
+    	getTest().log(Status.INFO, "Browser: " + browserName + 
+    			", " + "Browser Version: " + browserVersion + 
     			", " + "URL: " + BaseTest.prop.getProperty("url") + 
     			", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") + 
     			", " + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
@@ -109,14 +117,14 @@ public class Listeners implements ITestListener {
         	WebDriver driver = BaseTest.getDriver();
         	//String screenshotPath = ScreenshotUtils.captureScreenshot(driver, result.getMethod().getMethodName());
         	String screenshotPath = ScreenshotUtils.captureScreenshot(driver);
-        	String htmlTooltipForScreenshot = "<span style='"
+        	/*String htmlTooltipForScreenshot = "<span style='"
     								+ "position: relative; "
     								+ "cursor: pointer; "
     								+ "color: red; "
     								+ "font-weight: bold;' "
     								+ "title='File Path: " + screenshotPath.replace("\\", "\\\\") + "'>"
     								+ "Hover over here to see the filepath"
-    								+ "</span>";
+    								+ "</span>";*/
 	        
 	        //getTest().addScreenCaptureFromPath(screenshotPath);
 	        //getTest().fail("Test Failed - Screenshot attached:", 
