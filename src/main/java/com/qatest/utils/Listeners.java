@@ -6,6 +6,8 @@ package com.qatest.utils;
 import java.util.Map;
 
 import org.openqa.selenium.WebDriver;
+import org.testng.ISuite;
+import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -21,7 +23,7 @@ import com.qatest.base.BaseTest;
  *
  */
 //public class Listeners extends BaseTest implements ITestListener {
-public class Listeners implements ITestListener {
+public class Listeners implements ISuiteListener, ITestListener {
 	public static ExtentReports extent = ExtentReportsManager.getInstance();
     //ExtentTest test;
 	// ThreadLocal creates a unique instance of ExtentTest for every thread
@@ -32,6 +34,14 @@ public class Listeners implements ITestListener {
         return extentTest.get();
     }
     
+    
+    @Override
+    public void onStart(ISuite suite) {
+    	String msgOnSuiteStart = "Started TestSuite: " + suite.getName();
+    	System.out.println(msgOnSuiteStart);
+    	//getTest().log(Status.INFO, msgOnSuiteStart);        
+    }
+
     @Override
     public void onStart(ITestContext context) {
     	// Get the suite name in the testng xml file
@@ -40,6 +50,7 @@ public class Listeners implements ITestListener {
         //Below is just for user information
         //System.out.println("TestNG TestSuite: " + suiteName);
         System.out.println("Started a test in TestNG TestSuite: " + suiteName + " --> " + suiteTestName);
+        //getTest().log(Status.INFO, "Started a test in TestNG TestSuite: " + suiteName + " --> " + suiteTestName);
     }
     
     @Override
@@ -164,5 +175,12 @@ public class Listeners implements ITestListener {
         /*System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the individual test results.");
         System.out.println("Please refer to " + System.getProperty("user.dir") + "\\target\\surefire-reports directory for the latest surefire report.");
         System.out.println("In case of errors, please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.");*/
+    }
+    
+    @Override
+    public void onFinish(ISuite suite) {
+    	String msgOnSuiteFinish = "Finished TestSuite: " + suite.getName();
+    	System.out.println(msgOnSuiteFinish);
+    	//getTest().log(Status.INFO, msgOnSuiteFinish);
     }
 }
