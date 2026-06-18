@@ -15,6 +15,8 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 //import org.openqa.selenium.remote.DesiredCapabilities;
@@ -156,68 +158,101 @@ public class BaseTest {
         // Read the property from config properties file
         String headless = prop.getProperty("headless"); 
 
-        if (browser.equalsIgnoreCase("chrome")) {
-        	ChromeOptions options = new ChromeOptions();
-        	//options.addArguments("--incognito");
-            options.addArguments("--start-maximized");
-            //options.addArguments("--disable-gpu");
-        	
-        	//options.setCapability("os", "Windows");
-        	//options.setCapability("os_version", "11");
-        	//options.setCapability("browser_version", "latest");
-
-
-            if (headless.equalsIgnoreCase("true")) {
-                options.addArguments("--headless=new");
-                options.addArguments("--window-size=1920,1080");
-            }
-            
-            //WebDriverManager.chromedriver().browserVersion("83.0.4103").setup();//setup a specific browser version  
-            //WebDriverManager.chromedriver().driverVersion("85.0.4183.38").setup();//setup a specific driver version
-            //WebDriverManager.chromedriver().setup();//setup the latest browser and driver version, unless specified
-            
-            //For running Selenium Grid
-            if (gridRunFlag.equalsIgnoreCase("true")) {
-            	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
-            	
-            	//With WebDriverManager in Selenium Grid Nodes
-            	/*driver = WebDriverManager.chromedriver()
-            				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
-            				.capabilities(options)
-            				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
-            				.create();*/
-            } else {//local run
-            	//WebDriverManager.chromedriver().setup();
-            	//WebDriverManager.chromedriver().browserVersion(browser_version).setup();
-            	driver = new ChromeDriver(options);
-            }    
+        /*if (browser.equalsIgnoreCase("chrome")) {
+        
         } else if (browser.equalsIgnoreCase("firefox")) {
-        	FirefoxOptions options = new FirefoxOptions();
-            
-            if (headless.equalsIgnoreCase("true")) {
-                options.addArguments("-headless");
-                //options.addArguments("-window-size=1920,1080");
-            }
-            
-            //WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
-            
-            //For running Selenium Grid
-            if (gridRunFlag.equalsIgnoreCase("true")) {
-            	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
-            	
-            	//With WebDriverManager in Selenium Grid Nodes
-            	/*driver = WebDriverManager.firefoxdriver()
-            				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
-            				.capabilities(options)
-            				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
-            				.create();*/
-            } else {//local run
-            	//WebDriverManager.firefoxdriver().setup();
-            	//WebDriverManager.firefoxdriver().browserVersion(browser_version).setup();
-            	driver = new FirefoxDriver(options);
-            }
+        	
         } else {
             throw new IllegalArgumentException("Unsupported browser: " + browser);
+        }*/
+        
+        switch(browser.toUpperCase()) {
+        	
+        	case "FIREFOX":
+        		FirefoxOptions firefox_options = new FirefoxOptions();
+                
+                if (headless.equalsIgnoreCase("true")) {
+                	firefox_options.addArguments("-headless");
+                    //firefox_options.addArguments("-window-size=1920,1080");
+                }
+                
+                //WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
+                
+                //For running Selenium Grid
+                if (gridRunFlag.equalsIgnoreCase("true")) {
+                	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), firefox_options);
+                	
+                	//With WebDriverManager in Selenium Grid Nodes
+                	/*driver = WebDriverManager.firefoxdriver()
+                				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
+                				.capabilities(firefox_options)
+                				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
+                				.create();*/
+                } else {//local run
+                	//WebDriverManager.firefoxdriver().setup();
+                	//WebDriverManager.firefoxdriver().browserVersion(browser_version).setup();
+                	driver = new FirefoxDriver(firefox_options);
+                }
+                break;
+        	case "EDGE":
+        		EdgeOptions edge_options = new EdgeOptions();
+        		edge_options.addArguments("--start-maximized");
+        		
+        		if (headless.equalsIgnoreCase("true")) {
+        			edge_options.addArguments("--headless=new");
+        			edge_options.addArguments("--window-size=1920,1080");
+                }
+        		
+        		//For running Selenium Grid
+                if (gridRunFlag.equalsIgnoreCase("true")) {
+                	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), edge_options);
+                	//With WebDriverManager in Selenium Grid Nodes
+                	/*driver = WebDriverManager.edgedriver()
+                				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
+                				.capabilities(edge_options)
+                				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
+                				.create();*/
+                } else {//local run
+                	//WebDriverManager.edgedriver().setup();
+                	//WebDriverManager.edgedriver().browserVersion(browser_version).setup();
+                	driver = new EdgeDriver(edge_options);
+                }
+                break;
+        	default:
+        		ChromeOptions options = new ChromeOptions();
+            	//options.addArguments("--incognito");
+                options.addArguments("--start-maximized");
+                //options.addArguments("--disable-gpu");
+            	
+            	//options.setCapability("os", "Windows");
+            	//options.setCapability("os_version", "11");
+            	//options.setCapability("browser_version", "latest");
+
+
+                if (headless.equalsIgnoreCase("true")) {
+                    options.addArguments("--headless=new");
+                    options.addArguments("--window-size=1920,1080");
+                }
+                
+                //WebDriverManager.chromedriver().browserVersion("83.0.4103").setup();//setup a specific browser version  
+                //WebDriverManager.chromedriver().driverVersion("85.0.4183.38").setup();//setup a specific driver version
+                //WebDriverManager.chromedriver().setup();//setup the latest browser and driver version, unless specified
+                
+                //For running Selenium Grid
+                if (gridRunFlag.equalsIgnoreCase("true")) {
+                	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), options);
+                	
+                	//With WebDriverManager in Selenium Grid Nodes
+                	/*driver = WebDriverManager.chromedriver()
+                				.browserVersion(browser_version) //Specify major version (e.g. "120" or "121.0.6167.85")
+                				.capabilities(options)
+                				.remoteAddress(new URL(prop.getProperty("grid_hub_url")))
+                				.create();*/
+                } else {//local run
+                	//WebDriverManager.chromedriver().setup();
+                	//WebDriverManager.chromedriver().browserVersion(browser_version).setup();
+                	driver = new ChromeDriver(options);
+                }
         }
         
         tldriver.set(driver); // Set the driver for the current thread
@@ -275,7 +310,7 @@ public class BaseTest {
     	prop.clear();// Clear all config properties
     	
         //Below is just for user information
-        System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the individual test results.");
+        System.out.println("Please refer to " + System.getProperty("user.dir") + "\\test_results\\extent-reports directory for the generated test results.");
         System.out.println("Please refer to " + System.getProperty("user.dir") + "\\target\\surefire-reports directory for the latest surefire report.");
         System.out.println("In case of errors, please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.");
     }
