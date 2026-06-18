@@ -23,7 +23,9 @@ public class LoggingUtil {
 	public static void logDataMap(Map<String, String> data) {
 	    StringBuilder table = new StringBuilder();
 	    table.append("<table style='width:100%; border: 1px solid black; border-collapse: collapse;'>");
-	    table.append("<tr style='background-color: #f2f2f2;'><th style='border: 1px solid black;'>Column</th><th style='border: 1px solid black;'>Value</th></tr>");
+	    //table.append("<tr style='background-color: #f2f2f2;'><th style='border: 1px solid black;'>Column</th><th style='border: 1px solid black;'>Value</th></tr>");
+	    //removing background-color for dark mode
+	    table.append("<tr><th style='border: 1px solid black;'>Column</th><th style='border: 1px solid black;'>Value</th></tr>");
 	    
 	    for (Map.Entry<String, String> entry : data.entrySet()) {
 	        table.append("<tr>");
