@@ -121,7 +121,7 @@ public class BaseTest {
 */
     @BeforeSuite
 	@Parameters({"env"})
-    public void setUpSuite(String envName) {
+    public void setUpSuite(@Optional("qa") String envName) {
     	// Load config properties file (contains URL, Headless Mode, Grid Run Flag, etc.)
     	cr = new ConfigReader();
         prop = cr.init_prop();
