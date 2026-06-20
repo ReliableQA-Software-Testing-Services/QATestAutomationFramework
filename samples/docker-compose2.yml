@@ -23,7 +23,7 @@ services:
       - SE_NODE_MAX_SESSIONS=4 # Number of parallel Chrome tests
     ports:
       - "5555:5555" # Selenium Grid v4 requires the Hub to be able to talk back to the Node on its own port (usually 5555)
-
+      - "5901:5900" # Selenium VNCViewer port(5900)
   firefox-node:
     image: selenium/node-firefox:4.16.1
     shm_size: '2gb'
@@ -35,4 +35,5 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=4 # Number of parallel Firefox tests
     ports:
-      - "5556:5556"
+      - "5556:5555"
+      - "5902:5900"
