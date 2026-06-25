@@ -6,6 +6,7 @@ package com.qatest.utils;
 import java.io.File;
 import java.io.IOException;
 
+import com.aventstack.extentreports.AnalysisStrategy;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import java.util.TimeZone;
@@ -50,6 +51,9 @@ public class ExtentReportsManager {
             ExtentEmailReporter emailReporter = new ExtentEmailReporter(emailReportFilePath);*/
 
             extent = new ExtentReports();
+            // This forces parent nodes to fail if any child step (like a setup method log) fails
+            extent.setAnalysisStrategy(AnalysisStrategy.TEST); 
+            
             extent.attachReporter(sparkReporter);
             /*You can attach multiple reporters and output the same information to each report
             extent.attachReporter(sparkReporter, emailReporter);*/

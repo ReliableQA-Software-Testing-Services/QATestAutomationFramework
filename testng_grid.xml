@@ -1,4 +1,4 @@
-<suite name="GridSuite" parallel="tests" thread-count="2">
+<suite name="GridSuite" configfailurepolicy="continue" parallel="tests" thread-count="3">
 	<listeners>
         <listener class-name="com.qatest.utils.Listeners" />
     </listeners>

@@ -36,6 +36,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
 import com.qatest.utils.ExtentReportsManager;
+import com.qatest.utils.Listeners;
 //import org.testng.xml.XmlTest;
 
 //import com.aventstack.extentreports.Status;
@@ -135,8 +136,9 @@ public class BaseTest {
     public void setUpTest(@Optional("chrome") String browser, 
     					  @Optional("latest") String browser_version, 
     					  ITestContext context) throws IOException, 
-    														MalformedURLException, 
-    														InterruptedException {
+    													MalformedURLException, 
+    													InterruptedException,
+    													Exception {
     	// Load config properties file (contains browser type, URL, etc.)
     	/*cr = new ConfigReader();
         prop = cr.init_prop();*/
@@ -293,7 +295,7 @@ public class BaseTest {
     }
 
     @AfterMethod
-    public void tearDownTest() {
+    public void tearDownTest() throws Exception {
         /*if (driver != null) {
             driver.quit();
         }*/
@@ -307,6 +309,7 @@ public class BaseTest {
     
     @AfterSuite
     public void tearDownSuite() {
+    	Listeners.extent.flush();// This is mandatory to generate the extent-report file
     	prop.clear();// Clear all config properties
     	
         //Below is just for user information
