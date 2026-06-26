@@ -96,26 +96,29 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
             if (browsr_version == null || browsr_version.isEmpty()) browsr_version = "latest";*/
                     
             //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
-        	getTest().log(Status.INFO, "Browser: " + browserName + 
-        			", " + "Browser Version: " + browserVersion + 
-        			", " + "URL: " + BaseTest.prop.getProperty("url") + 
-        			", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") + 
-        			", " + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
+        	getTest().log(Status.INFO, "Browser: " + browserName 
+        			+ System.getProperty("line.separator") + "Browser Version: " + browserVersion 
+        			+ System.getProperty("line.separator") + "URL: " + BaseTest.prop.getProperty("url") 
+        			+ System.getProperty("line.separator") + "Headless Mode:" + BaseTest.prop.getProperty("headless") 
+        			+ System.getProperty("line.separator") + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
         }
     }
     
     @Override
     public void onTestFailure(ITestResult result) {
-    	String errorMessage = handleNullPtrException(result, "Failed due to Configuration/Grid failure.");
+    	String errorMessage = handleNullPtrException(result, result.getName() + " has been failed.");
         
         // Report the reason for failure in ExtentReports
-        getTest().log(Status.FAIL, errorMessage);
+        //getTest().log(Status.FAIL, errorMessage);
+        getTest().log(Status.FAIL, "TEST FAILED: " 
+        		+ result.getMethod().getMethodName() 
+        		+ "----->" + errorMessage);
     	
         System.out.println("Test failed: " + result.getName());
         //getTest().log(Status.FAIL, markup);
         //getTest().fail(result.getThrowable());
         getTest().log(Status.FAIL, "Test failed: " + result.getName());
-        getTest().log(Status.FAIL, result.getThrowable());
+        getTest().log(Status.FAIL, result.getThrowable()); //This is required to be logged for Bugs tab in Extent HTML Reports
         
         // Use the driver instance from the result to capture the screenshot
         // This ensures you get the screenshot from the correct thread in parallel runs
@@ -165,14 +168,16 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
 
     @Override
     public void onTestSkipped(ITestResult result) {
-    	String errorMessage = handleNullPtrException(result, "Skipped due to Configuration/Grid failure.");
+    	String errorMessage = handleNullPtrException(result, result.getMethod().getMethodName() + " has been skipped.");
         
         // Force the status to FAIL in ExtentReports
-        getTest().log(Status.FAIL, "CRITICAL SKIP (Marked as Fail): " + errorMessage);
+        getTest().log(Status.FAIL, "CRITICAL SKIP (Test marked as Fail): " 
+        		+ result.getMethod().getMethodName() 
+        		+ "----->" + errorMessage);
         System.out.println("Skipped Test: " + result.getMethod().getMethodName());
         getTest().log(Status.FAIL, "Skipped Test: " + result.getMethod().getMethodName());
         //getTest().log(Status.SKIP, result.getThrowable());
-        getTest().log(Status.FAIL, result.getThrowable());
+        getTest().log(Status.FAIL, result.getThrowable()); //This is required to be logged for Bugs tab in Extent HTML Reports
     }
     
     @Override
@@ -221,11 +226,13 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
 //        	getTest().log(Status.FAIL, throwable);
 //        }
     	
-    	String errorMessage = handleNullPtrException(itr, "Setup failed on Selenium Grid.");
+    	String errorMessage = handleNullPtrException(itr, itr.getMethod().getMethodName() + ": Setup failed due to Configuration/Grid failure !");
         
         // Force the status to FAIL in ExtentReports
-        getTest().log(Status.FAIL, "Configuration Failed on Selenium Grid: " + errorMessage);
-        getTest().log(Status.FAIL, itr.getThrowable());
+        getTest().log(Status.FAIL, "Test Setup failed due to Configuration/Grid failure for: " 
+        		+ itr.getMethod().getMethodName() 
+        		+ "----->" + errorMessage);
+        getTest().log(Status.FAIL, itr.getThrowable()); //This is required to be logged for Bugs tab in Extent HTML Reports
         // Note: Maven Surefire report automatically picks up IConfigurationListener failures 
         // and marks the test suite as failed/skipped with the stack trace.
     }
