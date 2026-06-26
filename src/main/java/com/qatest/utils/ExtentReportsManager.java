@@ -28,7 +28,7 @@ public class ExtentReportsManager {
             // Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
             String sparkReportFilePath = projectPath + File.separator + "test_results" + 
             		File.separator + "extent-reports" +           
-            		File.separator + "TestReport_" + timestamp + ".html";
+            		File.separator + "TestReport_UTCTime_" + timestamp + ".html";
             //String path = System.getProperty("user.dir") + File.separator + "reports" + File.separator + "index.html";
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter(sparkReportFilePath);
             /*sparkReporter.config().setReportName("QA Automation Results");
