@@ -1,4 +1,4 @@
-This QA Test Automation Data-driven framework is consisting of below components(folder structure):
+This Selenium-based QA Test Automation Data-driven framework is consisting of below components(folder structure):
 
 0. pom.xml: This is a Maven POM file located at the project-root level. All the project dependencies, build configurations, user profiles, etc are in it.
 
