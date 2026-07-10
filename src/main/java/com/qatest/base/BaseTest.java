@@ -3,22 +3,33 @@
  */
 package com.qatest.base;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.logging.Level;
 
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 //import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.ITestContext;
@@ -35,14 +46,16 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
+import com.qatest.utils.DateTimeUtil;
 import com.qatest.utils.ExtentReportsManager;
 import com.qatest.utils.Listeners;
 //import org.testng.xml.XmlTest;
+import com.qatest.utils.TeeOutputStream;
 
 //import com.aventstack.extentreports.Status;
 //import com.qatest.utils.Listeners;
 
-//import io.github.bonigarcia.wdm.WebDriverManager; //Selenium Manager(in-built with Selenium 4 onwards) eliminates the need for WebDriverManager
+//import io.github.bonigarcia.wdm.WebDriverManager; //Selenium Manager(in-built with Selenium 4.6 onwards) eliminates the need for WebDriverManager
 
 /**
  * @author Divyang
@@ -53,6 +66,7 @@ public class BaseTest {
 		//set the default JVM timezone to UTC(or "America/New_York", "Asia/Kolkata", "Japan/Tokyo", etc) to adopt it across all global test runners
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	}
+    
     //protected WebDriver driver; //This is for non-parallel execution
 	//ThreadLocal creates a separate driver instance for every thread, which is needed for parallel execution
     private static ThreadLocal<WebDriver> tldriver = new ThreadLocal<>();
@@ -64,6 +78,10 @@ public class BaseTest {
     private ConfigReader cr;
     //protected Properties prop;
     public static Properties prop;
+    
+    //FileStream for logs
+    private FileOutputStream driverFileStream = null;
+    private OutputStream dualStream = null;
     
     //Default constructor
     protected BaseTest(){
@@ -122,13 +140,25 @@ public class BaseTest {
 */
     @BeforeSuite
 	@Parameters({"env"})
-    public void setUpSuite(@Optional("qa") String envName) {
+    public void setUpSuite(@Optional("qa") String envName) throws FileNotFoundException {
     	// Load config properties file (contains URL, Headless Mode, Grid Run Flag, etc.)
     	cr = new ConfigReader();
         prop = cr.init_prop();
 
 		// Print test environment in the dashboard of extent-reports
         ExtentReportsManager.setSystemInfoDynamically("Parallel Run Environment", envName);
+        
+        // 1. Set Driver logs filepath
+        String  driverLogPath = prop.getProperty("driver.logfile.path") 
+        		+ "_" + DateTimeUtil.getCurrentTimestampInUTC()
+        		+ "_UTC.log";
+        //String driverLogPath = "target/chromedriver_server_verbose.log";
+        
+        new File(prop.getProperty("logs.directory")).mkdirs();
+        driverFileStream = new FileOutputStream(driverLogPath);
+        
+        // 2. Dual Stream Setup (Console + File)
+        dualStream = new TeeOutputStream(System.out, driverFileStream);
     }
     
     @BeforeMethod
@@ -159,6 +189,14 @@ public class BaseTest {
         //String headless = System.getProperty("headlessMode");
         // Read the property from config properties file
         String headless = prop.getProperty("headless"); 
+        
+        // Create LoggingPreferences
+        LoggingPreferences logPrefs = new LoggingPreferences();
+        logPrefs.enable(LogType.BROWSER, Level.ALL);      // Browser console logs
+        logPrefs.enable(LogType.DRIVER, Level.ALL);       // WebDriver logs
+        //logPrefs.enable(LogType.PERFORMANCE, Level.ALL);  // Performance logs (not applicable to Firefox browser)
+        logPrefs.enable(LogType.CLIENT, Level.ALL);       // Client logs
+        logPrefs.enable(LogType.SERVER, Level.ALL);       // Server logs
 
         /*if (browser.equalsIgnoreCase("chrome")) {
         
@@ -172,6 +210,9 @@ public class BaseTest {
         	
         	case "FIREFOX":
         		FirefoxOptions firefox_options = new FirefoxOptions();
+        		firefox_options.addArguments("-start-maximized");
+        		// Set logging preferences in W3C-compliant way
+        		firefox_options.setCapability("moz:firefoxOptions", logPrefs);
                 
                 if (headless.equalsIgnoreCase("true")) {
                 	firefox_options.addArguments("-headless");
@@ -199,6 +240,8 @@ public class BaseTest {
         	case "EDGE":
         		EdgeOptions edge_options = new EdgeOptions();
         		edge_options.addArguments("--start-maximized");
+        		// Set logging preferences in W3C-compliant way
+        		edge_options.setCapability("goog:loggingPrefs", logPrefs);
         		
         		if (headless.equalsIgnoreCase("true")) {
         			edge_options.addArguments("--headless=new");
@@ -225,7 +268,39 @@ public class BaseTest {
             	//options.addArguments("--incognito");
                 options.addArguments("--start-maximized");
                 //options.addArguments("--disable-gpu");
+                
+                // 1. Core arguments to fix the DevToolsActivePort issue
+                options.addArguments("--no-sandbox"); // Bypasses OS security model layers (Critical for errors)
+                options.addArguments("--disable-dev-shm-usage"); // Forces Chrome to use system memory instead of /dev/shm
+                
+                // 2. Fixes for recent Chrome updates and profile sharing locks
+                //options.addArguments("--remote-debugging-port=9222"); 
+                // Force Selenium to use standard input/output pipes instead of local ports for communication in case firewalls or restricted non-admin privileges block local port listening
+                options.addArguments("--remote-debugging-pipe"); // Alternative communication channel if port fails
+                // Create a unique/isolated temporary profile directory name for this run to allow port mapping
+                /*String uniqueProfilePath = System.getProperty("java.io.tmpdir") + "selenium_unique_profile_" + "run_1_" + DateTimeUtil.getCurrentTimestampInUTC();
+                options.addArguments("--user-data-dir=" + uniqueProfilePath);*/
             	
+                /*// 1. Set Driver logs filepath
+                String  driverLogPath = prop.getProperty("driver.logfile.path") 
+                		+ "_" + DateTimeUtil.getCurrentTimestampInUTC()
+                		+ "_UTC.log";
+                //String driverLogPath = "target/chromedriver_server_verbose.log";
+                
+                new File(prop.getProperty("logs.directory")).mkdirs();
+                driverFileStream = new FileOutputStream(driverLogPath);
+
+                // 2. Dual Stream Setup (Console + File)
+                OutputStream dualStream = new TeeOutputStream(System.out, driverFileStream);*/
+                
+                ChromeDriverService service = new ChromeDriverService.Builder()
+                        .withVerbose(true)
+                        .withLogOutput(dualStream)
+                        .build();
+
+                // 3. Enable Browser & Client Logs  // Set logging preferences in W3C-compliant way
+                options.setCapability(ChromeOptions.LOGGING_PREFS, logPrefs);
+
             	//options.setCapability("os", "Windows");
             	//options.setCapability("os_version", "11");
             	//options.setCapability("browser_version", "latest");
@@ -233,7 +308,7 @@ public class BaseTest {
 
                 if (headless.equalsIgnoreCase("true")) {
                     options.addArguments("--headless=new");
-                    options.addArguments("--window-size=1920,1080");
+                    options.addArguments("--window-size=1920,1080"); 
                 }
                 
                 //WebDriverManager.chromedriver().browserVersion("83.0.4103").setup();//setup a specific browser version  
@@ -253,7 +328,7 @@ public class BaseTest {
                 } else {//local run
                 	//WebDriverManager.chromedriver().setup();
                 	//WebDriverManager.chromedriver().browserVersion(browser_version).setup();
-                	driver = new ChromeDriver(options);
+                	driver = new ChromeDriver(service, options);
                 }
         }
         
@@ -265,9 +340,13 @@ public class BaseTest {
         // Fetch timeouts from properties and convert to Long
         long pageLoad = Long.parseLong(prop.getProperty("timeout.pageLoad"));
         long script = Long.parseLong(prop.getProperty("timeout.script"));
+        long implicitWait = Long.parseLong(prop.getProperty("timeout.implicit"));
+        long explicitWait = Long.parseLong(prop.getProperty("timeout.explicit"));
+        
         // Apply Global Timeouts
         getDriver().manage().timeouts().pageLoadTimeout(Duration.ofSeconds(pageLoad));
         getDriver().manage().timeouts().scriptTimeout(Duration.ofSeconds(script));
+        //getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWait));
         
         getDriver().manage().window().maximize();
         //getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -294,17 +373,26 @@ public class BaseTest {
     			", " + "Selenium Grid Run:" + gridRunFlag);*/
     }
 
-    @AfterMethod
-    public void tearDownTest() throws Exception {
+    @AfterMethod(alwaysRun = true) //browser cleanup happens even if the test is skipped or fails early
+    public void tearDownTest() {
         /*if (driver != null) {
             driver.quit();
         }*/
     	if (getDriver() != null) {
-        getDriver().quit();
-        System.out.println("Browser closed.");
+    		String browserLogFilepath = prop.getProperty("browserClient.logfile.path") 
+            		+ "_" + DateTimeUtil.getCurrentTimestampInUTC()
+            		+ "_UTC.log";
+    		saveAndPrintWebLogs(getDriver(), browserLogFilepath);
+    		
+    		getDriver().quit();
+    		System.out.println("Browser closed.");
         		
-        tldriver.remove(); // This is necessary to clean up the thread
+    		tldriver.remove(); // This is necessary to clean up the thread
     	}
+    	
+    	if (driverFileStream != null) {
+            try { driverFileStream.close(); } catch (IOException e) { e.printStackTrace(); }
+        }
     }
     
     @AfterSuite
@@ -317,4 +405,30 @@ public class BaseTest {
         System.out.println("Please refer to " + System.getProperty("user.dir") + "\\target\\surefire-reports directory for the latest surefire report.");
         System.out.println("In case of errors, please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.");
     }
+    
+    private static void saveAndPrintWebLogs(WebDriver driver, String filePath) {
+        try (PrintWriter fileWriter = new PrintWriter(new FileOutputStream(filePath))) {
+            
+            String[] logTypes = { LogType.BROWSER, LogType.CLIENT };
+            
+            for (String logType : logTypes) {
+                String header = "\n===== " + logType.toUpperCase() + " LOGS =====";
+                
+                // Write headers to both places
+                System.out.println(header);
+                fileWriter.println(header);
+
+                LogEntries entries = driver.manage().logs().get(logType);
+                for (LogEntry entry : entries) {
+                    String logLine = "[" + entry.getLevel() + "] " + entry.getMessage();
+                    
+                    System.out.println(logLine);   // Print out to Maven Terminal Console
+                    fileWriter.println(logLine);   // Write out to output text file
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Could not save browser/client logs: " + e.getMessage());
+        }
+    }
+
 }

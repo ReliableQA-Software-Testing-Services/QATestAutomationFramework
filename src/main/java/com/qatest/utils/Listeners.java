@@ -3,9 +3,19 @@
  */
 package com.qatest.utils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.testng.IConfigurationListener;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
@@ -97,10 +107,10 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
                     
             //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
         	getTest().log(Status.INFO, "Browser: " + browserName 
-        			+ System.getProperty("line.separator") + "Browser Version: " + browserVersion 
-        			+ System.getProperty("line.separator") + "URL: " + BaseTest.prop.getProperty("url") 
-        			+ System.getProperty("line.separator") + "Headless Mode:" + BaseTest.prop.getProperty("headless") 
-        			+ System.getProperty("line.separator") + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
+        			+ ", " + "Browser Version: " + browserVersion 
+        			+ ", " + "URL: " + BaseTest.prop.getProperty("url") 
+        			+ ", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") 
+        			+ ", " + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
         }
     }
     
@@ -155,6 +165,12 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
 	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath, htmlTooltipForScreenshot).build());*/
 	        getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure: Click on it to open</font></b>", 
 	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+	        
+	        // Attach Browser & Client Logs to Extent Report
+	        //attachWebLogsToExtent(driver, getTest());
+            // Attach Driver/Server Logs to Extent Report
+            //attachDriverCrashLogsToExtent(BaseTest.prop.getProperty("driver_log_path"), getTest());
+            
         } catch (Exception e) {
         	getTest().log(Status.INFO, "Failed to capture screenshot: " + e.getMessage());
         }
@@ -262,4 +278,77 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
         return errorMessage;
     }
     
+    // Method to parse and append Browser & Client runtime logs into Extent Report markdown code blocks
+    private static void attachWebLogsToExtent(WebDriver driver, ExtentTest test) {
+        String[] logTypes = { LogType.BROWSER, LogType.CLIENT };
+        
+        for (String logType : logTypes) {
+            StringBuilder logBuilder = new StringBuilder();
+            LogEntries entries = driver.manage().logs().get(logType);
+            
+            for (LogEntry entry : entries) {
+                logBuilder.append("[").append(entry.getLevel()).append("] ")
+                          .append(entry.getMessage()).append("\n");
+            }
+            
+            if (logBuilder.length() > 0) {
+                // Formatting inside Extent Report using standard HTML <pre> or Markdown markup code blocks
+                test.log(Status.INFO, "<b>" + logType.toUpperCase() + " LOGS:</b><br><pre>" + logBuilder.toString() + "</pre>");
+            }
+        }
+    }
+
+    // Method to extract the raw Driver/Server text file from disk if the driver crashes on launch
+    private static void attachDriverCrashLogsToExtent(String logPath, ExtentTest test) {
+        try {
+            File logFile = new File(logPath);
+            if (logFile.exists()) {
+                String content = new String(Files.readAllBytes(Paths.get(logPath)));
+                // Truncate if logs are too long for the HTML report UI
+                if (content.length() > 10000) {
+                    content = content.substring(content.length() - 10000) + "\n...[Truncated due to size]...";
+                }
+                test.log(Status.WARNING, "<b>DRIVER VERBOSE CRASH LOGS:</b><br><pre>" + content + "</pre>");
+            }
+        } catch (IOException e) {
+            test.log(Status.INFO, "Failed to read crash log file: " + e.getMessage());
+        }
+    }
+
+    private void attachLogFiles(ITestResult result, ExtentTest test) {
+        String driverLogSrc = BaseTest.prop.getProperty("driver.logfile.path");
+        String browserLogSrc = BaseTest.prop.getProperty("browserClient.logfile.path");
+
+        if (driverLogSrc != null) {
+            attachFileToReport(driverLogSrc, result.getMethod().getMethodName() + "_driver.log", "Driver Log", test);
+        }
+        if (browserLogSrc != null) {
+            attachFileToReport(browserLogSrc, result.getMethod().getMethodName() + "_browser.log", "Browser Log", test);
+        }
+    }
+
+    private void attachFileToReport(String sourcePath, String targetFileName, String logLabel, ExtentTest test) {
+        File source = new File(sourcePath);
+        if (!source.exists()) return;
+
+        // Relative path used inside the Extent HTML report page
+        String relativeReportPath = "attachments/" + targetFileName;
+        File destination = new File("test_results/extent-reports/" + relativeReportPath);
+
+        try {
+            // Copy file to the reporting root directory for distribution stability
+            Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            
+            // Inject an HTML download link directly into the Extent Report log view row
+            String htmlAttachmentLink = String.format(
+                "<a href='%s' target='_blank' style='color:#15c; font-weight:bold;'>📎 Download %s (%s)</a>",
+                relativeReportPath, logLabel, targetFileName
+            );
+            
+            test.log(Status.INFO, htmlAttachmentLink);
+        } catch (IOException e) {
+            test.log(Status.INFO, "Failed to attach file " + logLabel + ": " + e.getMessage());
+        }
+    }
+
 }
