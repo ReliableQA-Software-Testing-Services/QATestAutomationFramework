@@ -5,6 +5,7 @@ package com.qatest.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import com.aventstack.extentreports.AnalysisStrategy;
 import com.aventstack.extentreports.ExtentReports;
@@ -19,17 +20,32 @@ public class ExtentReportsManager {
 	private static ExtentReports extent;
 	
     public static ExtentReports getInstance() {
-        if (extent == null) {
-        	// System.getProperty("user.dir") returns the current project root path
-            String projectPath = System.getProperty("user.dir");
+    	if (extent == null) {
             //String timestamp = DateTimeUtil.getCurrentTimestamp();
             String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
             
+            // System.getProperty("user.dir") returns the current project root path
+            String projectPath = System.getProperty("user.dir");
             // Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
-            String sparkReportFilePath = projectPath + File.separator + "test_results" + 
+            /*String sparkReportFilePath = projectPath + File.separator + "test_results" + 
             		File.separator + "extent-reports" +           
-            		File.separator + "TestReport_" + timestamp + "_UTC.html";
+            		File.separator + "TestReport_" + timestamp + "_UTC.html";*/
+            
+            String extentReportsDirPath = projectPath 
+            		+ File.separator + "test_results" 
+            		+ File.separator + "extent-reports";
+            String reportName = "TestReport_" + timestamp + "_UTC";
+            Path uniqueSparkReportFilePath = null;
+			try {
+				uniqueSparkReportFilePath = UniquePathCreator.createUniquePath(extentReportsDirPath, reportName, "html", false);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				System.out.println("The path for extent-test HTML report could not be set !");
+			}
+            String sparkReportFilePath = uniqueSparkReportFilePath.toAbsolutePath().toString();
             //String path = System.getProperty("user.dir") + File.separator + "reports" + File.separator + "index.html";
+            
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter(sparkReportFilePath);
             /*sparkReporter.config().setReportName("QA Automation Results");
             sparkReporter.config().setDocumentTitle("Test Execution Report");*/
