@@ -33,10 +33,6 @@ public class ScreenshotUtils {
         	//String timestamp = new SimpleDateFormat("yyyyMmmrdd_HHMMSS").format(new Date());
         	
             File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-            //Capture current WebDriver session id
-            SessionId session = ((RemoteWebDriver) driver).getSessionId();
-            String currentSessionID = session.toString();
-            
             //String timestamp = DateTimeUtil.getCurrentTimestamp(); //You can also use in-built function System.currentTimeMillis()
             String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
             //String destPath = "target/screenshots/" + screenshotName + ".png";
@@ -45,6 +41,9 @@ public class ScreenshotUtils {
          
             // System.getProperty("user.dir") returns the current project root path
             String projectPath = System.getProperty("user.dir");
+            //Capture current WebDriver session id
+            SessionId session = ((RemoteWebDriver) driver).getSessionId();
+            String currentSessionID = session.toString();
             
             // Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
             String destPath = projectPath + File.separator + "test_results" + 
