@@ -23,7 +23,7 @@ public class ExcelUtil {
     private static Sheet sheet;
     //public static String TESTDATA_SHEET_PATH = "./src/test/resources/testdata/TestData.xlsx";
 
-    public static Object[][] getTestData(String excelFilePath, String sheetName, String filterColumn, String filterValue) {
+    public Object[][] getTestData(String excelFilePath, String sheetName, String filterColumn, String filterValue) {
         Object data[][] = null;
         try {
             FileInputStream ip = new FileInputStream(excelFilePath);
@@ -76,7 +76,7 @@ public class ExcelUtil {
         return data;
     }
 
-    public static Object[][] getTestDataAsMap(String excelFilePath, String sheetName, String filterColumn, String filterValue) {
+    public Object[][] getTestDataAsMap(String excelFilePath, String sheetName, String filterColumn, String filterValue) {
         Object[][] data = null;
         try {
             FileInputStream ip = new FileInputStream(excelFilePath);

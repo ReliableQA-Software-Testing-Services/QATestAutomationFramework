@@ -47,15 +47,13 @@ public class LoginTest extends BaseTest {
 	@DataProvider(name = "LoginData", parallel = true)
 	public Object[][] getLoginData() {
 	    // Logic inside ExcelUtil would package each row into a HashMap<String, String>
-	    //return ExcelUtil.getTestDataAsMap(".\\test_data\\testdata_loginpage.xlsx", "td_loginpage", "run_flag", "Y"); 
+	    //return ExcelUtil.getTestDataAsMap(".\\test_data\\testdata_loginpage.xlsx", "td_loginpage", "run_flag", "Y");
 		
-		// System.getProperty("user.dir") returns the current project root path
-        String projectPath = System.getProperty("user.dir");
-        
         // Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
-        String excelPath = projectPath + File.separator + "test_data" +  
+        String excelPath = TESTDATA_PARENT_DIR_PATH +  
                            File.separator + "testdata_loginpage.xlsx";
-        return ExcelUtil.getTestDataAsMap(excelPath, "td_loginpage", "run_flag", "Y"); 
+        ExcelUtil login_dataset = new ExcelUtil();
+        return login_dataset.getTestDataAsMap(excelPath, "td_loginpage", "run_flag", "Y"); 
 	}
 
 	//@Test(dataProvider = "LoginData", retryAnalyzer = RetryAnalyzer.class)
