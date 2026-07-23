@@ -5,10 +5,10 @@ package com.qatest.base;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+//import java.io.FileOutputStream;
 import java.io.IOException;
 //import java.io.OutputStream;
-import java.io.PrintWriter;
+//import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -21,14 +21,16 @@ import java.util.logging.Level;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-//import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.firefox.GeckoDriverService;
+//import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
+//import org.openqa.selenium.logging.LogEntries;
+//import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 //import org.openqa.selenium.remote.DesiredCapabilities;
@@ -52,6 +54,7 @@ import com.qatest.utils.DateTimeUtil;
 import com.qatest.utils.ExtentReportsManager;
 import com.qatest.utils.Listeners;
 //import org.testng.xml.XmlTest;
+import com.qatest.utils.LoggingUtil;
 //import com.qatest.utils.TeeOutputStream;
 import com.qatest.utils.UniquePathCreator;
 
@@ -83,17 +86,20 @@ public class BaseTest {
     public static Properties prop = null;
     
     // Get project's root directory path
-    public String projectPath = System.getProperty("user.dir");
+    public static final String PROJECT_ROOT_PATH = System.getProperty("user.dir");
     // Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
-    public String extentReportsDirPath = projectPath 
+    public static final String EXTENTREPORTS_DIR_PATH = PROJECT_ROOT_PATH 
     		+ File.separator + "test_results" 
     		+ File.separator + "extent-reports";
     // Set path for logs directory
-    public String logsDirPath = extentReportsDirPath 
+    public static final String LOGS_DIR_PATH = EXTENTREPORTS_DIR_PATH 
     		+ File.separator + "logs";
     // Set path for screenshots directory
-    public String screenshotsDirPath = extentReportsDirPath 
+    public static final String SCREENSHOTS_DIR_PATH = EXTENTREPORTS_DIR_PATH 
     		+ File.separator + "screenshots";
+    // Set path for test data directory
+    public static final String TESTDATA_PARENT_DIR_PATH = PROJECT_ROOT_PATH 
+    		+ File.separator + "test_data";
     
     //Default constructor
     protected BaseTest(){
@@ -162,14 +168,14 @@ public class BaseTest {
         
         // Create logs directory unless it exists
         //new File(prop.getProperty("logs.directory")).mkdirs();
-        File logsDir = new File(logsDirPath);
+        File logsDir = new File(LOGS_DIR_PATH);
         if (!logsDir.exists()) {
         	logsDir.mkdirs();
         }
         
         // Create screenshots directory unless it exists
         //new File(prop.getProperty("screenshots.directory")).mkdirs();
-        File screenshotsDir = new File(screenshotsDirPath);
+        File screenshotsDir = new File(SCREENSHOTS_DIR_PATH);
         if (!screenshotsDir.exists()) {
         	screenshotsDir.mkdirs();
         }
@@ -198,6 +204,9 @@ public class BaseTest {
         String  urlText = prop.getProperty("url");
         String gridRunFlag = prop.getProperty("grid_run");
         WebDriver driver = null;
+        String utc_timestamp = null;
+        Path uniqueDriverLogPath = null;
+        String driverLogPath = null;
         
         // Read the property set by Maven Profiles in pom.xml
         //String headless = System.getProperty("headlessMode");
@@ -206,11 +215,11 @@ public class BaseTest {
         
         // Create LoggingPreferences
         LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.BROWSER, Level.ALL);      // Browser console logs
-        logPrefs.enable(LogType.DRIVER, Level.ALL);       // WebDriver logs
+        logPrefs.enable(LogType.BROWSER, Level.ALL);      // This log type pertains to logs from the browser.
+        logPrefs.enable(LogType.DRIVER, Level.ALL);       // This log pertains to logs from the WebDriver implementation
         //logPrefs.enable(LogType.PERFORMANCE, Level.ALL);  // Performance logs (not applicable to Firefox browser)
-        logPrefs.enable(LogType.CLIENT, Level.ALL);       // Client logs
-        logPrefs.enable(LogType.SERVER, Level.ALL);       // Server logs
+        //logPrefs.enable(LogType.CLIENT, Level.ALL);       // Client logs (no longer supported in Selenium 4 and later)
+        //logPrefs.enable(LogType.SERVER, Level.ALL);       // Server logs (no longer supported in Selenium 4 and later)
 
         /*if (browser.equalsIgnoreCase("chrome")) {
         
@@ -225,18 +234,35 @@ public class BaseTest {
         	case "FIREFOX":
         		FirefoxOptions firefox_options = new FirefoxOptions();
         		firefox_options.addArguments("-start-maximized");
+        		//firefox_options.addArguments("--marionette-port 67123");
+        		
+        		utc_timestamp =  DateTimeUtil.getCurrentTimestampInUTC();
+                uniqueDriverLogPath = UniquePathCreator.createUniquePath(LOGS_DIR_PATH, "geckodriver_logs_" + utc_timestamp + "_UTC", "log", false);
+                driverLogPath = uniqueDriverLogPath.toAbsolutePath().toString();
+        		// Build the service and declare your target log file
+        		GeckoDriverService firefox_service = new GeckoDriverService.Builder()
+        				.withTruncatedLogs(false)
+        		        .withLogFile(new File(driverLogPath))
+        		        .build();
+        		
         		// Set logging preferences in W3C-compliant way
         		firefox_options.setCapability("moz:firefoxOptions", logPrefs);
+        		//firefox_options.setLogLevel(FirefoxDriverLogLevel.TRACE);
+        		
                 
                 if (headless.equalsIgnoreCase("true")) {
                 	firefox_options.addArguments("-headless");
                     //firefox_options.addArguments("-window-size=1920,1080");
+                	firefox_options.addArguments("--disable-gpu");
                 }
                 
                 //WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
                 
                 //For running Selenium Grid
                 if (gridRunFlag.equalsIgnoreCase("true")) {
+                	firefox_options.addArguments("--no-sandbox"); // Helps prevent crashes in Docker/Linux environments
+                	firefox_options.addArguments("--disable-dev-shm-usage"); // Fixes OOM memory crashes in Docker/Linux nodes
+                	
                 	driver = new RemoteWebDriver(new URL(prop.getProperty("grid_hub_url")), firefox_options);
                 	
                 	//With WebDriverManager in Selenium Grid Nodes
@@ -248,14 +274,20 @@ public class BaseTest {
                 } else {//local run
                 	//WebDriverManager.firefoxdriver().setup();
                 	//WebDriverManager.firefoxdriver().browserVersion(browser_version).setup();
-                	driver = new FirefoxDriver(firefox_options);
+                	//driver = new FirefoxDriver(firefox_options);
+                	driver = new FirefoxDriver(firefox_service, firefox_options);
                 }
                 break;
         	case "EDGE":
         		EdgeOptions edge_options = new EdgeOptions();
         		edge_options.addArguments("--start-maximized");
+        		
+        		// Enable performance logs for Edge browser
+        		//logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
+        		
         		// Set logging preferences in W3C-compliant way
-        		edge_options.setCapability("goog:loggingPrefs", logPrefs);
+        		//edge_options.setCapability("goog:loggingPrefs", logPrefs);
+        		edge_options.setCapability(EdgeOptions.LOGGING_PREFS, logPrefs);
         		
         		if (headless.equalsIgnoreCase("true")) {
         			edge_options.addArguments("--headless=new");
@@ -292,33 +324,43 @@ public class BaseTest {
                 // Force Selenium to use standard input/output pipes instead of local ports for communication in case firewalls or restricted non-admin privileges block local port listening
                 options.addArguments("--remote-debugging-pipe");// Alternative communication channel if port fails
                 // Create a unique/isolated temporary profile directory name for this run to allow port mapping
-                String utc_timestamp =  DateTimeUtil.getCurrentTimestampInUTC();
+                utc_timestamp =  DateTimeUtil.getCurrentTimestampInUTC();
                 String uniqueProfileDir = "selenium_unique_profile_" + utc_timestamp;
                 //String uniqueProfilePath = System.getProperty("java.io.tmpdir") + uniqueProfileDir;
                 Path uniqueProfilePath = UniquePathCreator.createUniquePath(System.getProperty("java.io.tmpdir"), uniqueProfileDir, null, true);
                 options.addArguments("--user-data-dir=" + uniqueProfilePath.toAbsolutePath().toString());
             	
-                /*// 1. Set Driver logs filepath
+                // 1. Set Driver logs filepath
                 //String driverLogPath = "target/chromedriver_server_verbose.log";
-                //String  driverLogPath = logsDirPath 
+                //String  driverLogPath = LOGS_DIR_PATH 
                 //		+ File.separator 
                 //		+ "chromedriver_server_verbose_logs_" + utc_timestamp + "_UTC.log";
                 
-                Path uniqueDriverLogPath = UniquePathCreator.createUniquePath(logsDirPath, "chromedriver_server_verbose_logs_" + utc_timestamp + "_UTC", "log", false);
-                String driverLogPath = uniqueDriverLogPath.toAbsolutePath().toString();
+                uniqueDriverLogPath = UniquePathCreator.createUniquePath(LOGS_DIR_PATH, "chromedriver_verbose_logs_" + utc_timestamp + "_UTC", "log", false);
+                driverLogPath = uniqueDriverLogPath.toAbsolutePath().toString();
                 
                 //new File(prop.getProperty("logs.directory")).mkdirs();
+                
+                /*// 2. Dual Stream Setup (Console + File)
                 FileOutputStream driverFileStream = new FileOutputStream(driverLogPath, true);// 'true' enables append mode
-
-                // 2. Dual Stream Setup (Console + File)
                 OutputStream dualStream = new TeeOutputStream(System.out, driverFileStream);
                 
                 ChromeDriverService service = new ChromeDriverService.Builder()
                         .withVerbose(true)
                         .withLogOutput(dualStream)
                         .build();*/
+                
+                // 2. Only Persistent File Setup (Physical File)
+                ChromeDriverService service = new ChromeDriverService.Builder()
+                        .withVerbose(true)
+                        .withLogFile(new File(driverLogPath))
+                        .build();
+                
+                // Enable performance logs for Chrome browser
+        		//logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
 
                 // 3. Enable Browser & Client Logs  // Set logging preferences in W3C-compliant way
+                //options.setCapability("goog:loggingPrefs", logPrefs);
                 options.setCapability(ChromeOptions.LOGGING_PREFS, logPrefs);
 
             	//options.setCapability("os", "Windows");
@@ -348,8 +390,8 @@ public class BaseTest {
                 } else {//local run
                 	//WebDriverManager.chromedriver().setup();
                 	//WebDriverManager.chromedriver().browserVersion(browser_version).setup();
-                	//driver = new ChromeDriver(service, options);
-                	driver = new ChromeDriver(options);
+                	driver = new ChromeDriver(service, options);
+                	//driver = new ChromeDriver(options);
                 }
         }
         
@@ -406,16 +448,14 @@ public class BaseTest {
         		//Capture current WebDriver session id
                 SessionId session = ((RemoteWebDriver) getDriver()).getSessionId();
                 String currentSessionID = session.toString();
-                
                 String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
         		
         		// Save Browser logs in a file
-                String browserLogFilepath = logsDirPath + File.separator + "browser_client_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
-        		saveAndPrintWebLogs(getDriver(), browserLogFilepath);
-        		
-        		// Save Driver logs in a file
-                String driverLogFilePath = logsDirPath + File.separator + "driver_server_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
-        		saveAndPrintDriverLogs(getDriver(), driverLogFilePath);
+                String browserLogFilepath = LOGS_DIR_PATH + File.separator + "browser_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
+                LoggingUtil.saveAndPrintWebLogs(getDriver(), browserLogFilepath);
+        		// Flush buffered Driver logs in a Driver logs file before quitting the Driver
+                /*String driverLogFilePath = LOGS_DIR_PATH + File.separator + "driver_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
+        		LoggingUtil.saveAndPrintDriverLogs(getDriver(), driverLogFilePath);*/
     		} catch (Exception e) {
     			e.printStackTrace();
     		} finally {
@@ -429,8 +469,10 @@ public class BaseTest {
     
     @AfterSuite(alwaysRun = true)
     public void tearDownSuite() {
-    	Listeners.extent.flush();// This is mandatory to generate the extent-report file
-
+    	if (Listeners.extent != null) {    	
+    		Listeners.extent.flush();// This is mandatory to generate the extent-report file
+    	}
+    	
     	if (prop != null) {
     		prop.clear();// Clear all config properties
     	}
@@ -441,55 +483,4 @@ public class BaseTest {
         System.out.println("In case of errors, please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.");
     }
     
-    private static void saveAndPrintWebLogs(WebDriver driver, String filePath) {
-        try (PrintWriter fileWriter = new PrintWriter(new FileOutputStream(filePath))) {
-            
-            //String[] logTypes = { LogType.BROWSER, LogType.CLIENT };
-            String[] logTypes = { LogType.BROWSER };
-            
-            for (String logType : logTypes) {
-                String header = "\n===== " + logType.toUpperCase() + " LOGS =====";
-                
-                // Write headers to both places
-                //System.out.println(header);
-                fileWriter.println(header);
-
-                LogEntries entries = driver.manage().logs().get(logType);
-                for (LogEntry entry : entries) {
-                    String logLine = "[" + entry.getTimestamp() + "] " + "[" + entry.getLevel() + "] " + entry.getMessage();
-                    
-                    //System.out.println(logLine);   // Print out to Maven Terminal Console
-                    fileWriter.println(logLine);   // Write out to output text file
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Could not save browser/client logs: " + e.getMessage());
-        }
-    }
-
-    private static void saveAndPrintDriverLogs(WebDriver driver, String filePath) {
-        try (PrintWriter fileWriter = new PrintWriter(new FileOutputStream(filePath))) {
-            
-            //String[] logTypes = { LogType.DRIVER, LogType.SERVER };
-            String[] logTypes = { LogType.DRIVER };
-            
-            for (String logType : logTypes) {
-                String header = "\n===== " + logType.toUpperCase() + " LOGS =====";
-                
-                // Write headers to both places
-                //System.out.println(header);
-                fileWriter.println(header);
-
-                LogEntries entries = driver.manage().logs().get(logType);
-                for (LogEntry entry : entries) {
-                    String logLine = "[" + entry.getTimestamp() + "] " + "[" + entry.getLevel() + "] " + entry.getMessage();
-                    
-                    //System.out.println(logLine);   // Print out to Maven Terminal Console
-                    fileWriter.println(logLine);   // Write out to output text file
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Could not save driver/server logs: " + e.getMessage());
-        }
-    }
 }
