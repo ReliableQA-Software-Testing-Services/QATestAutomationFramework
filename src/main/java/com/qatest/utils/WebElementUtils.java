@@ -46,4 +46,10 @@ public class WebElementUtils {
 
 	    return wait.until(driver2 -> driver.findElement(locator));
 	}
+	
+	// Highlight a web element
+	public void highlightVisibleElement(WebDriver driver, By locator) {
+		//waitForElementVisible
+		// To Do
+	}
 }
