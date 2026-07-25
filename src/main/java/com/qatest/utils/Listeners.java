@@ -95,7 +95,8 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
             if (browsr_version == null || browsr_version.isEmpty()) browsr_version = "latest";*/
                     
             //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
-        	getTest().log(Status.INFO, "Browser: " + browserName 
+        	getTest().log(Status.INFO, "Test Environment: " + System.getProperty("test.env") 
+        			+ ", " + "Browser: " + browserName 
         			+ ", " + "Browser Version: " + browserVersion 
         			+ ", " + "URL: " + BaseTest.prop.getProperty("url") 
         			+ ", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") 

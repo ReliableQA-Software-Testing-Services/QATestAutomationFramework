@@ -4,6 +4,7 @@
 package com.qatest.base;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 //import java.io.FileOutputStream;
 import java.io.IOException;
@@ -81,7 +82,7 @@ public class BaseTest {
         return tldriver.get();
     }
     
-    private ConfigReader cr;
+    //private ConfigReader cr;
     //protected Properties prop;
     public static Properties prop = null;
     
@@ -100,6 +101,9 @@ public class BaseTest {
     // Set path for test data directory
     public static final String TESTDATA_PARENT_DIR_PATH = PROJECT_ROOT_PATH 
     		+ File.separator + "test_data";
+    // Set path for test configurations directory
+    public static final String TEST_CONFIGS_DIR_PATH = PROJECT_ROOT_PATH 
+    		+ File.separator + "test_config";
     
     //Default constructor
     protected BaseTest(){
@@ -160,8 +164,43 @@ public class BaseTest {
 	@Parameters({"env"})
     public void setUpSuite(@Optional("qa") String envName) throws FileNotFoundException {
     	// Load config properties file (contains URL, Headless Mode, Grid Run Flag, etc.)
-    	cr = new ConfigReader();
-        prop = cr.init_prop();
+    	/*cr = new ConfigReader();
+        prop = cr.init_prop();*/
+        prop = new Properties();
+        
+        if (envName == null || envName.isEmpty()) envName = "qa";
+        
+        System.setProperty("test.env", envName);
+        System.out.println("Test Environment: " + System.getProperty("test.env"));
+        
+        String configFilePath = null;
+        
+        switch(envName.toUpperCase()) {
+        	
+	    	case "PROD":
+	    		// Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
+	            configFilePath = TEST_CONFIGS_DIR_PATH + 
+	            			File.separator + "config - prod.properties";
+	            break;
+	    	case "UAT":
+	    		configFilePath = TEST_CONFIGS_DIR_PATH + 
+        					File.separator + "config - stage.properties";
+	    		break;
+	    	default:
+	    		configFilePath = TEST_CONFIGS_DIR_PATH + 
+        					File.separator + "config - qa.properties";
+	    		//break;
+	    	/*default:
+	    		System.out.println("Invalid test environment; please set the correct test environment(QA, UAT, PROD, etc) and run the tests again.");
+	    		System.exit(0);*/
+        }
+        
+        try {
+            FileInputStream ip = new FileInputStream(configFilePath);
+            prop.load(ip);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 		// Print test environment in the dashboard of extent-reports
         ExtentReportsManager.setSystemInfoDynamically("Parallel Run Environment", envName);
@@ -233,7 +272,7 @@ public class BaseTest {
         	
         	case "FIREFOX":
         		FirefoxOptions firefox_options = new FirefoxOptions();
-        		firefox_options.addArguments("-start-maximized");
+        		//firefox_options.addArguments("-start-maximized");
         		//firefox_options.addArguments("--marionette-port 67123");
         		
         		utc_timestamp =  DateTimeUtil.getCurrentTimestampInUTC();
@@ -254,6 +293,8 @@ public class BaseTest {
                 	firefox_options.addArguments("-headless");
                     //firefox_options.addArguments("-window-size=1920,1080");
                 	firefox_options.addArguments("--disable-gpu");
+                } else {
+                	firefox_options.addArguments("--start-maximized");
                 }
                 
                 //WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
@@ -312,7 +353,7 @@ public class BaseTest {
         	default:
         		ChromeOptions options = new ChromeOptions();
             	//options.addArguments("--incognito");
-                options.addArguments("--start-maximized");
+                //options.addArguments("--start-maximized");
                 //options.addArguments("--disable-gpu");
                 
                 // 1. Core arguments to fix the DevToolsActivePort issue
@@ -371,6 +412,8 @@ public class BaseTest {
                 if (headless.equalsIgnoreCase("true")) {
                     options.addArguments("--headless=new");
                     options.addArguments("--window-size=1920,1080"); 
+                } else {
+                	options.addArguments("--start-maximized");
                 }
                 
                 //WebDriverManager.chromedriver().browserVersion("83.0.4103").setup();//setup a specific browser version  
@@ -427,8 +470,9 @@ public class BaseTest {
         System.out.println("Browser:" + browser + 
         		" with version:" + browser_version +
         		" launched for URL:" + urlText + 
-        		" in Headless:" + headless + 
-        		" mode with Selenium Grid Run:" + gridRunFlag);
+        		" in Headless:" + headless + " mode" + 
+        		" with Selenium Grid Run:" + gridRunFlag + 
+        		" in test environment: " + System.getProperty("test.env"));
         //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
     	/*Listeners.getTest().log(Status.INFO, "Browser: " + browser + 
     			", " + "URL: " + urlText + 
