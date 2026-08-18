@@ -272,8 +272,9 @@ public class BaseTest {
         	
         	case "FIREFOX":
         		FirefoxOptions firefox_options = new FirefoxOptions();
-        		//firefox_options.addArguments("-start-maximized");
-        		//firefox_options.addArguments("--marionette-port 67123");
+        		//firefox_options.addArguments("--kiosk");// to open browser in full-screen mode
+        		//firefox_options.addArguments("--marionette-port 67123");// This is not advisable for parallel run 
+        		//as there will be race-condition while multiple threads try to utilize the same port 
         		
         		utc_timestamp =  DateTimeUtil.getCurrentTimestampInUTC();
                 uniqueDriverLogPath = UniquePathCreator.createUniquePath(LOGS_DIR_PATH, "geckodriver_logs_" + utc_timestamp + "_UTC", "log", false);
@@ -293,9 +294,9 @@ public class BaseTest {
                 	firefox_options.addArguments("-headless");
                     //firefox_options.addArguments("-window-size=1920,1080");
                 	firefox_options.addArguments("--disable-gpu");
-                } else {
-                	firefox_options.addArguments("--start-maximized");
-                }
+                } /*else {
+                	firefox_options.addArguments("-start-maximized");// There is no such option for Firefox as of 13-Aug-2026
+                }*/
                 
                 //WebDriverManager.firefoxdriver().setup();//setup the latest browser version, unless specified
                 
@@ -321,7 +322,7 @@ public class BaseTest {
                 break;
         	case "EDGE":
         		EdgeOptions edge_options = new EdgeOptions();
-        		edge_options.addArguments("--start-maximized");
+        		//edge_options.addArguments("--start-maximized");
         		
         		// Enable performance logs for Edge browser
         		//logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
@@ -412,9 +413,9 @@ public class BaseTest {
                 if (headless.equalsIgnoreCase("true")) {
                     options.addArguments("--headless=new");
                     options.addArguments("--window-size=1920,1080"); 
-                } else {
+                }/* else {
                 	options.addArguments("--start-maximized");
-                }
+                }*/
                 
                 //WebDriverManager.chromedriver().browserVersion("83.0.4103").setup();//setup a specific browser version  
                 //WebDriverManager.chromedriver().driverVersion("85.0.4183.38").setup();//setup a specific driver version
@@ -454,7 +455,7 @@ public class BaseTest {
         getDriver().manage().timeouts().scriptTimeout(Duration.ofSeconds(script));
         //getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWait));
         
-        getDriver().manage().window().maximize();
+        getDriver().manage().window().maximize();// This will be ignored when running in headless mode
         //getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         getDriver().get(urlText);
         
@@ -493,12 +494,14 @@ public class BaseTest {
                 SessionId session = ((RemoteWebDriver) getDriver()).getSessionId();
                 String currentSessionID = session.toString();
                 String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
+                
+                System.out.println("Session ID: " + currentSessionID);
         		
-        		// Save Browser logs in a file
+        		/*// Save Browser logs in a file
                 String browserLogFilepath = LOGS_DIR_PATH + File.separator + "browser_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
                 LoggingUtil.saveAndPrintWebLogs(getDriver(), browserLogFilepath);
         		// Flush buffered Driver logs in a Driver logs file before quitting the Driver
-                /*String driverLogFilePath = LOGS_DIR_PATH + File.separator + "driver_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
+                String driverLogFilePath = LOGS_DIR_PATH + File.separator + "driver_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
         		LoggingUtil.saveAndPrintDriverLogs(getDriver(), driverLogFilePath);*/
     		} catch (Exception e) {
     			e.printStackTrace();
