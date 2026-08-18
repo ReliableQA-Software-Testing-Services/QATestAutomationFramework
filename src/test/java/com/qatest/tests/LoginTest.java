@@ -46,6 +46,10 @@ public class LoginTest extends BaseTest {
 	
 	@DataProvider(name = "LoginData", parallel = true)
 	public Object[][] getLoginData() {
+		/* When you use @DataProvider(parallel = true), TestNG automatically spins up 
+		 * distinct execution threads and instantiates a unique, independent ITestResult object 
+		 * for every single data iteration. */
+		
 	    // Logic inside ExcelUtil would package each row into a HashMap<String, String>
 	    //return ExcelUtil.getTestDataAsMap(".\\test_data\\testdata_loginpage.xlsx", "td_loginpage", "run_flag", "Y");
 		
