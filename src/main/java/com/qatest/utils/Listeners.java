@@ -12,11 +12,13 @@ import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+//import org.testng.SkipException;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.qatest.base.BaseTest;
 
 /**
@@ -55,11 +57,17 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     
     @Override
     public void onTestStart(ITestResult result) {
+    	// Retrieve the unique name generated from the data iteration
+        String uniqueTestName = (String) result.getAttribute("uniqueTestName");
+        if (uniqueTestName == null) {
+            uniqueTestName = result.getMethod().getMethodName();
+        }
+        
     	String browserName = (String) result.getTestContext().getAttribute("browserName");
         String browserVersion = (String) result.getTestContext().getAttribute("browserVersion");
 
         if (BaseTest.getDriver() != null && browserName != null && browserVersion != null) {
-        	ExtentTest test = extent.createTest(result.getMethod().getMethodName())
+        	ExtentTest test = extent.createTest(uniqueTestName)
                     .assignCategory(browserName) // categorize by browser
                     .assignDevice(browserVersion); // show version per test
 
@@ -78,12 +86,20 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
         	System.out.println("Started Test: " + result.getMethod().getMethodName());
         	getTest().log(Status.INFO, "Started Test: " + result.getMethod().getMethodName());
         	
-        	// Check for DataProvider parameters
-            Object[] params = result.getParameters();
+        	// Print the DataProvider parameters inside the Extent Report
+        	/*Object[] params = result.getParameters();
             for (Object param : params) {
                 if (param instanceof Map) {
                 	LoggingUtil.logDataMap((Map<String, String>) param);
                 }
+            }*/
+            
+            // Automatically dump the entire Excel row HashMap as a clean table inside the Extent Report
+            @SuppressWarnings("unchecked")
+            Map<String, String> dataMap = (Map<String, String>) result.getAttribute("dataMap");
+            if (dataMap != null) {
+            	getTest().log(Status.INFO, "<b>Test Data Used:</b><br>" + 
+            					MarkupHelper.createTable(LoggingUtil.convertMapTo2DArray(dataMap)));
             }
             
             /*String browsr = result.getTestContext().getCurrentXmlTest().getParameter("browser");
@@ -95,12 +111,12 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
             if (browsr_version == null || browsr_version.isEmpty()) browsr_version = "latest";*/
                     
             //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
-        	getTest().log(Status.INFO, "Test Environment: " + System.getProperty("test.env") 
-        			+ ", " + "Browser: " + browserName 
-        			+ ", " + "Browser Version: " + browserVersion 
-        			+ ", " + "URL: " + BaseTest.prop.getProperty("url") 
-        			+ ", " + "Headless Mode:" + BaseTest.prop.getProperty("headless") 
-        			+ ", " + "Selenium Grid Run:" + BaseTest.prop.getProperty("grid_run"));
+        	getTest().log(Status.INFO, "<b>Test Environment: </b>" + System.getProperty("test.env") 
+        			+ ", " + "<b>Browser: </b>" + browserName 
+        			+ ", " + "<b>Browser Version: </b> " + browserVersion 
+        			+ ", " + "<b>URL: </b>" + BaseTest.prop.getProperty("url") 
+        			+ ", " + "<b>Headless Mode: </b>" + BaseTest.prop.getProperty("headless") 
+        			+ ", " + "<b>Selenium Grid Run: </b>" + BaseTest.prop.getProperty("grid_run"));
         }
     }
     
@@ -166,7 +182,7 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
         getTest().log(Status.PASS, "Test passed: " + result.getName());
     }
 
-    @Override
+    /*@Override
     public void onTestSkipped(ITestResult result) {
     	String errorMessage = handleNullPtrException(result, result.getMethod().getMethodName() + " has been skipped.");
         
@@ -178,6 +194,18 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
         getTest().log(Status.FAIL, "Skipped Test: " + result.getMethod().getMethodName());
         //getTest().log(Status.SKIP, result.getThrowable());
         getTest().log(Status.FAIL, result.getThrowable()); //This is required to be logged for Bugs tab in Extent HTML Reports
+    }*/
+    
+    @Override
+    public void onTestSkipped(ITestResult result) {
+    	if (result.getAttribute("skippedDueToConfigFailure") != null) {
+    		// Force the status to FAIL in ExtentReports
+    		System.out.println("Configuration/Setup failure. Failed Test: " + result.getMethod().getMethodName());
+            getTest().log(Status.FAIL, "Configuration/Setup failure. Failed Test: " + result.getMethod().getMethodName());
+    	} else {
+    		System.out.println("Test skipped: " + result.getName());
+            getTest().log(Status.SKIP, "Test skipped: " + result.getName());
+    	}
     }
     
     @Override
@@ -226,6 +254,9 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
 //        	getTest().log(Status.FAIL, throwable);
 //        }
     	
+    	// A configuration method (like @BeforeMethod / @BeforeClass) has failed.
+        // Mark this in the test result attributes so downstream handlers know.
+        itr.setAttribute("skippedDueToConfigFailure", true);
     	String errorMessage = handleNullPtrException(itr, itr.getMethod().getMethodName() + ": Setup failed due to Configuration/Grid failure !");
         
         // Force the status to FAIL in ExtentReports
@@ -241,7 +272,7 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     	// IF THE TEST WAS SKIPPED BECAUSE OF A GRID CONFIGURATION FAILURE:
         // TestNG sets the status to SKIP, but we force ExtentReports to show FAIL.
         if (getTest() == null) {
-            // If onTestStart didn't run yet because @BeforeMethod failed early
+            // If onTestStart didn't create an ExtentTest test object yet because @BeforeMethod failed early
         	ExtentTest test = extent.createTest(result.getMethod().getMethodName());
             extentTest.set(test); // Store the test object for the current thread
         }
@@ -260,6 +291,5 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
             }
         }
         return errorMessage;
-    }
-    
+    }   
 }
