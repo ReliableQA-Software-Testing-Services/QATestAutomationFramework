@@ -65,6 +65,8 @@ public class LoginTest extends BaseTest {
 	public void loginTest(Map<String, String> data) {
 	    // You only have one parameter, but you can access all data using Map:
 	    //getDriver().get(data.get("URL"));
+		System.out.println("Executing Thread ID: " + Thread.currentThread().getId() + 
+                " | Testing with User: " + data.get("username"));
 	    LoginPage loginPage = new LoginPage(getDriver());
 	    //loginPage.doLogin(data.get("Username"), data.get("Password"));
 	    //loginPage.login(data.get("username"), "");
