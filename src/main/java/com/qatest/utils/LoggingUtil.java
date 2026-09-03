@@ -54,6 +54,18 @@ public class LoggingUtil {
 	    Listeners.getTest().log(Status.INFO, "<b>Test Data Used:</b><br>" + table.toString());
 	}
 	
+	// Helper utility to transform Map into Extent table format
+	public static String[][] convertMapTo2DArray(Map<String, String> map) {
+        String[][] tableData = new String[map.size()][2];
+        int i = 0;
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            tableData[i][0] = entry.getKey();
+            tableData[i][1] = entry.getValue();
+            i++;
+        }
+        return tableData;
+    }
+	
 	// Method to parse and append Browser & Client runtime logs into Extent Report markdown code blocks
     public static void attachWebLogsToExtent(WebDriver driver, ExtentTest test) {
         String[] logTypes = { LogType.BROWSER, LogType.CLIENT };
