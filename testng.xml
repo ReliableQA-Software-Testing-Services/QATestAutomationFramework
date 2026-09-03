@@ -2,8 +2,9 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <!-- <suite name="Regression Suite S0"> -->
 <suite name="Regression_Suite_S1" parallel="tests" thread-count="3">
-	<parameter name="env" value="stage"/>
+	<parameter name="env" value="qa1"/>
     <listeners>
+    	<listener class-name="com.qatest.utils.ExtentDataDrivenListener"/>
         <listener class-name="com.qatest.utils.Listeners" />
     </listeners>
 
@@ -18,7 +19,7 @@
     	</classes>
     </test>
     
-    <test name="DataDriven-Login-Tests-Chrome" parallel="methods" thread-count="2">
+    <!-- <test name="DataDriven-Login-Tests-Chrome" parallel="methods" thread-count="2">
     	<parameter name="browser" value="chrome"/>
         <classes>
       		<class name="com.qatest.tests.LoginTest">
@@ -27,7 +28,7 @@
       			</methods> 
       		</class>
     	</classes>
-    </test>
+    </test> -->
     
     <!-- <test name="DataDriven-Login-Tests-Edge" parallel="methods" thread-count="2">
     	<parameter name="browser" value="edge"/>
