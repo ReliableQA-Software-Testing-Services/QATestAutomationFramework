@@ -41,7 +41,9 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     public void onStart(ISuite suite) {
     	String msgOnSuiteStart = "Started TestSuite: " + suite.getName();
     	System.out.println(msgOnSuiteStart);
-    	//getTest().log(Status.INFO, msgOnSuiteStart);        
+    	//getTest().log(Status.INFO, msgOnSuiteStart);
+    	// print a Test Suite name in the dashboard of extent-reports
+        ExtentReportsManager.setSystemInfoDynamically("Test Suite", suite.getName());
     }
 
     @Override
