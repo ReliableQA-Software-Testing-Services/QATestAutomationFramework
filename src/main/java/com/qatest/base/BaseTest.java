@@ -493,7 +493,7 @@ public class BaseTest {
         		//Capture current WebDriver session id
                 SessionId session = ((RemoteWebDriver) getDriver()).getSessionId();
                 String currentSessionID = session.toString();
-                String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
+                //String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
                 
                 System.out.println("Session ID: " + currentSessionID);
         		
