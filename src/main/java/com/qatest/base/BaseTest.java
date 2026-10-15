@@ -56,6 +56,7 @@ import com.qatest.utils.ExtentReportsManager;
 import com.qatest.utils.Listeners;
 //import org.testng.xml.XmlTest;
 import com.qatest.utils.LoggingUtil;
+import com.qatest.utils.TestContextManager;
 //import com.qatest.utils.TeeOutputStream;
 import com.qatest.utils.UniquePathCreator;
 
@@ -487,7 +488,7 @@ public class BaseTest {
             driver.quit();
         }*/
     	if (getDriver() != null) {
-    		try {
+    		//try {
     			//dualStream.flush();// This is required to write driver logs in a file
         		
         		//Capture current WebDriver session id
@@ -495,8 +496,9 @@ public class BaseTest {
                 String currentSessionID = session.toString();
                 //String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
                 
-                System.out.println("Session ID: " + currentSessionID);
-        		
+                //System.out.println("Session ID: " + currentSessionID);
+        	
+            try {	
         		/*// Save Browser logs in a file
                 String browserLogFilepath = LOGS_DIR_PATH + File.separator + "browser_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
                 LoggingUtil.saveAndPrintWebLogs(getDriver(), browserLogFilepath);
@@ -507,11 +509,12 @@ public class BaseTest {
     			e.printStackTrace();
     		} finally {
     			getDriver().quit();
-        		System.out.println("Browser closed.");
-        		
+        		System.out.println("Browser closed with Session ID: " + currentSessionID);
         		tldriver.remove(); // This is necessary to clean up the thread
     		}
     	}
+    	/*System.out.println("Test Name after Test Method execution: " + TestContextManager.getAttribute("uniqueTestName"));
+        System.out.println("Test Data after Test Method execution: " + TestContextManager.getAttribute("dataMap"));*/
     }
     
     @AfterSuite(alwaysRun = true)
