@@ -59,17 +59,23 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     
     @Override
     public void onTestStart(ITestResult result) {
+    	/*System.out.println("Test Name on Test Start: " + TestContextManager.getAttribute("uniqueTestName"));
+        System.out.println("Test Data on Test Start: " + TestContextManager.getAttribute("dataMap"));
     	// Retrieve the unique name generated from the data iteration
-        String uniqueTestName = (String) result.getAttribute("uniqueTestName");
+        //String uniqueTestName = (String) result.getAttribute("uniqueTestName");
+        String uniqueTestName = (String) TestContextManager.getAttribute("uniqueTestName");
         if (uniqueTestName == null) {
             uniqueTestName = result.getMethod().getMethodName();
         }
-        
+        System.out.println("----->Test Name: "  + uniqueTestName);*/
     	String browserName = (String) result.getTestContext().getAttribute("browserName");
         String browserVersion = (String) result.getTestContext().getAttribute("browserVersion");
 
         if (BaseTest.getDriver() != null && browserName != null && browserVersion != null) {
-        	ExtentTest test = extent.createTest(uniqueTestName)
+        	/*ExtentTest test = extent.createTest(uniqueTestName)
+                    .assignCategory(browserName) // categorize by browser
+                    .assignDevice(browserVersion); // show version per test*/
+        	ExtentTest test = extent.createTest(result.getMethod().getMethodName())
                     .assignCategory(browserName) // categorize by browser
                     .assignDevice(browserVersion); // show version per test
 
@@ -85,24 +91,27 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
             
         	extentTest.set(test); // Store the test object for the current thread
         	
-        	System.out.println("Started Test: " + result.getMethod().getMethodName());
-        	getTest().log(Status.INFO, "Started Test: " + result.getMethod().getMethodName());
+        	/*System.out.println("Started Test: " + uniqueTestName);
+        	getTest().log(Status.INFO, "Started Test: " + uniqueTestName);*/
         	
         	// Print the DataProvider parameters inside the Extent Report
         	/*Object[] params = result.getParameters();
             for (Object param : params) {
                 if (param instanceof Map) {
-                	LoggingUtil.logDataMap((Map<String, String>) param);
+                	//LoggingUtil.logDataMap((Map<String, String>) param);
+                	// Log the HTML table to the Extent Report
+	    			getTest().log(Status.INFO, "<b>Test Data Used:</b><br>" + LoggingUtil.logDataMap((Map<String, String>) param));
                 }
             }*/
             
-            // Automatically dump the entire Excel row HashMap as a clean table inside the Extent Report
-            @SuppressWarnings("unchecked")
-            Map<String, String> dataMap = (Map<String, String>) result.getAttribute("dataMap");
+        	// Automatically dump the entire Excel row HashMap as a clean table inside the Extent Report
+            /*@SuppressWarnings("unchecked")
+            //Map<String, String> dataMap = (Map<String, String>) result.getAttribute("dataMap");
+            Map<String, String> dataMap = (Map<String, String>) TestContextManager.getAttribute("dataMap");
             if (dataMap != null) {
-            	getTest().log(Status.INFO, "<b>Test Data Used:</b><br>" + 
+            	Listeners.getTest().log(Status.INFO, "<b>Test Data Used:</b><br>" + 
             					MarkupHelper.createTable(LoggingUtil.convertMapTo2DArray(dataMap)));
-            }
+            }*/
             
             /*String browsr = result.getTestContext().getCurrentXmlTest().getParameter("browser");
             //defaulting to chrome browser
@@ -200,7 +209,8 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     
     @Override
     public void onTestSkipped(ITestResult result) {
-    	if (result.getAttribute("skippedDueToConfigFailure") != null) {
+    	//if (result.getAttribute("skippedDueToConfigFailure") != null) {
+		if (TestContextManager.getAttribute("skippedDueToConfigFailure") != null) {
     		// Force the status to FAIL in ExtentReports
     		System.out.println("Configuration/Setup failure. Failed Test: " + result.getMethod().getMethodName());
             getTest().log(Status.FAIL, "Configuration/Setup failure. Failed Test: " + result.getMethod().getMethodName());
@@ -258,7 +268,9 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     	
     	// A configuration method (like @BeforeMethod / @BeforeClass) has failed.
         // Mark this in the test result attributes so downstream handlers know.
-        itr.setAttribute("skippedDueToConfigFailure", true);
+        //itr.setAttribute("skippedDueToConfigFailure", true);
+        TestContextManager.setAttribute("skippedDueToConfigFailure", true);
+        
     	String errorMessage = handleNullPtrException(itr, itr.getMethod().getMethodName() + ": Setup failed due to Configuration/Grid failure !");
         
         // Force the status to FAIL in ExtentReports

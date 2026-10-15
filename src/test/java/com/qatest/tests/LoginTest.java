@@ -12,12 +12,15 @@ import org.testng.annotations.Test;
 
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.qatest.base.BaseTest;
 import com.qatest.pages.LoginPage;
 import com.qatest.utils.ExcelUtil;
 import com.qatest.utils.Listeners;
+import com.qatest.utils.LoggingUtil;
 import com.qatest.utils.RetryAnalyzer;
 import com.qatest.utils.ScreenshotUtils;
+import com.qatest.utils.TestContextManager;
 
 /**
  * @author Divyang
@@ -44,7 +47,7 @@ public class LoginTest extends BaseTest {
 	    loginPage.login(user, pwd);
 	}*/
 	
-	@DataProvider(name = "LoginData", parallel = true)
+	@DataProvider(name = "LoginData", parallel = false)
 	public Object[][] getLoginData() {
 		/* When you use @DataProvider(parallel = true), TestNG automatically spins up 
 		 * distinct execution threads and instantiates a unique, independent ITestResult object 
@@ -67,7 +70,22 @@ public class LoginTest extends BaseTest {
 	    //getDriver().get(data.get("URL"));
 		System.out.println("Executing Thread ID: " + Thread.currentThread().getId() + 
                 " | Testing with User: " + data.get("username"));
-	    LoginPage loginPage = new LoginPage(getDriver());
+		String uniqueTestName = (String) TestContextManager.getAttribute("uniqueTestName");
+		System.out.println("Started Test: " + uniqueTestName);
+    	Listeners.getTest().log(Status.INFO, "Started Test: " + uniqueTestName);
+    	
+    	// Automatically dump the entire Excel row HashMap as a clean table inside the Extent Report
+        @SuppressWarnings("unchecked")
+        //Map<String, String> dataMap = (Map<String, String>) result.getAttribute("dataMap");
+        Map<String, String> dataMap = (Map<String, String>) TestContextManager.getAttribute("dataMap");
+        if (dataMap != null) {
+        	/*Listeners.getTest().log(Status.INFO, "<b>Test Data Used:</b><br>" + 
+        					MarkupHelper.createTable(LoggingUtil.convertMapTo2DArray(dataMap)));*/
+        	Listeners.getTest().log(Status.INFO, "<b>Test Data Used:</b><br>" + 
+        					LoggingUtil.logDataMap(dataMap));
+        }
+	    
+        LoginPage loginPage = new LoginPage(getDriver());
 	    //loginPage.doLogin(data.get("Username"), data.get("Password"));
 	    //loginPage.login(data.get("username"), "");
 	    loginPage.enterUsername(data.get("username"));
