@@ -151,17 +151,18 @@ public class LoggingUtil {
                 String header = "\n===== " + logType.toUpperCase() + " LOGS =====";
                 
                 // Write headers to both places
-                //System.out.println(header);
+                System.out.println(header);
                 fileWriter.println(header);
 
                 LogEntries entries = driver.manage().logs().get(logType);
                 for (LogEntry entry : entries) {
                     String logLine = "[" + entry.getTimestamp() + "] " + "[" + entry.getLevel() + "] " + entry.getMessage();
                     
-                    //System.out.println(logLine);   // Print out to Maven Terminal Console
+                    System.out.println(logLine);   // Print out to Maven Terminal Console
                     fileWriter.println(logLine);   // Write out to output text file
                 }
             }
+            fileWriter.close();
         } catch (IOException e) {
             System.err.println("Could not save browser/client logs: " + e.getMessage());
         }
@@ -178,17 +179,18 @@ public class LoggingUtil {
                 String header = "\n===== " + logType.toUpperCase() + " LOGS =====";
                 
                 // Write headers to both places
-                //System.out.println(header);
+                System.out.println(header);
                 fileWriter.println(header);
 
                 LogEntries entries = driver.manage().logs().get(logType);
                 for (LogEntry entry : entries) {
                     String logLine = "[" + entry.getTimestamp() + "] " + "[" + entry.getLevel() + "] " + entry.getMessage();
                     
-                    //System.out.println(logLine);   // Print out to Maven Terminal Console
+                    System.out.println(logLine);   // Print out to Maven Terminal Console
                     fileWriter.println(logLine);   // Write out to output text file
                 }
             }
+            fileWriter.close();
         } catch (IOException e) {
             System.err.println("Could not save driver/server logs: " + e.getMessage());
         }
