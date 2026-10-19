@@ -51,6 +51,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
+import com.aventstack.extentreports.Status;
 import com.qatest.utils.DateTimeUtil;
 import com.qatest.utils.ExtentReportsManager;
 import com.qatest.utils.Listeners;
@@ -280,6 +281,7 @@ public class BaseTest {
         		utc_timestamp =  DateTimeUtil.getCurrentTimestampInUTC();
                 uniqueDriverLogPath = UniquePathCreator.createUniquePath(LOGS_DIR_PATH, "geckodriver_logs_" + utc_timestamp + "_UTC", "log", false);
                 driverLogPath = uniqueDriverLogPath.toAbsolutePath().toString();
+                
         		// Build the service and declare your target log file
         		GeckoDriverService firefox_service = new GeckoDriverService.Builder()
         				.withTruncatedLogs(false)
@@ -440,6 +442,10 @@ public class BaseTest {
                 }
         }
         
+        //TestContextManager.setAttribute("driverLogPath", driverLogPath);//This is not recommended as TestContextManager is cleared after a test method invocation
+        // Store driverLogPath in TestNG context (thread-safe per test run)
+        context.setAttribute("driverLogPath", driverLogPath);
+        
         tldriver.set(driver); // Set the driver for the current thread
         /*driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -458,6 +464,18 @@ public class BaseTest {
         
         getDriver().manage().window().maximize();// This will be ignored when running in headless mode
         //getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        
+        //Save and print Session ID
+        SessionId session = ((RemoteWebDriver) getDriver()).getSessionId();
+        /*TestContextManager.setAttribute("currentSessionId", session);
+        String session_id = (String) TestContextManager.getAttribute("currentSessionId");*/
+        String session_id = session.toString();
+        //TestContextManager.setAttribute("currentSessionId", session_id); //This is not recommended as TestContextManager is cleared after a test method invocation
+        // Store session_id in TestNG context (thread-safe per test run)
+        context.setAttribute("session_id", session_id);
+        System.out.println("A browser launched with Session ID: " + session_id);
+        
+        //Launch the web application
         getDriver().get(urlText);
         
         // Now get the browser name and version at run-time and store them in a test context of TestNG
@@ -483,7 +501,7 @@ public class BaseTest {
     }
 
     @AfterMethod(alwaysRun = true) //browser cleanup happens even if the test is skipped or fails early
-    public void tearDownTest() {
+    public void tearDownTest(ITestContext context) {
         /*if (driver != null) {
             driver.quit();
         }*/
@@ -491,25 +509,29 @@ public class BaseTest {
     		//try {
     			//dualStream.flush();// This is required to write driver logs in a file
         		
-        		//Capture current WebDriver session id
-                SessionId session = ((RemoteWebDriver) getDriver()).getSessionId();
-                String currentSessionID = session.toString();
-                //String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
-                
-                //System.out.println("Session ID: " + currentSessionID);
+        		//get current WebDriver session id
+                //SessionId session = ((RemoteWebDriver) getDriver()).getSessionId();
+                //String currentSessionId = (String) TestContextManager.getAttribute("currentSessionId");
+    			String currentSessionId = (String) context.getAttribute("session_id");
+    			//String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
+                String logs_timestamp = DateTimeUtil.getCurrentTimestampInUTC();
         	
             try {	
-        		/*// Save Browser logs in a file
-                String browserLogFilepath = LOGS_DIR_PATH + File.separator + "browser_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
+        		// Save Browser logs in a file
+                String browserLogFilepath = LOGS_DIR_PATH + File.separator + "browser_logs_" + currentSessionId + "_" + logs_timestamp + "_UTC.log";
                 LoggingUtil.saveAndPrintWebLogs(getDriver(), browserLogFilepath);
-        		// Flush buffered Driver logs in a Driver logs file before quitting the Driver
-                String driverLogFilePath = LOGS_DIR_PATH + File.separator + "driver_logs_" + currentSessionID + "_" + timestamp + "_UTC.log";
-        		LoggingUtil.saveAndPrintDriverLogs(getDriver(), driverLogFilePath);*/
+        		
+                // Flush buffered Driver logs in a Driver logs file before quitting the Driver
+                //String driverLogFilePath = LOGS_DIR_PATH + File.separator + "driver_logs_" + currentSessionId + "_" + logs_timestamp + "_UTC.log";
+        		//String driverLogFilePath = (String) TestContextManager.getAttribute("driverLogPath");
+        		String driverLogFilePath = (String) context.getAttribute("driverLogPath");
+                LoggingUtil.saveAndPrintDriverLogs(getDriver(), driverLogFilePath);
     		} catch (Exception e) {
     			e.printStackTrace();
     		} finally {
     			getDriver().quit();
-        		System.out.println("Browser closed with Session ID: " + currentSessionID);
+        		System.out.println("A browser closed with Session ID: " + currentSessionId);
+            	Listeners.getTest().log(Status.INFO, "<b> A browser closed with Session ID: </b>" + currentSessionId);
         		tldriver.remove(); // This is necessary to clean up the thread
     		}
     	}
