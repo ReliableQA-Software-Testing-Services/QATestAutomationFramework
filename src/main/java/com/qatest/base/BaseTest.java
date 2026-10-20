@@ -443,8 +443,9 @@ public class BaseTest {
         }
         
         //TestContextManager.setAttribute("driverLogPath", driverLogPath);//This is not recommended as TestContextManager is cleared after a test method invocation
-        // Store driverLogPath in TestNG context (thread-safe per test run)
-        context.setAttribute("driverLogPath", driverLogPath);
+        /*// Store driverLogPath in TestNG context (thread-safe per test run)
+        context.setAttribute("driverLogPath", driverLogPath);*/
+        TestContextManager.setAttribute("driverLogPath", driverLogPath);
         
         tldriver.set(driver); // Set the driver for the current thread
         /*driver.manage().window().maximize();
@@ -471,8 +472,9 @@ public class BaseTest {
         String session_id = (String) TestContextManager.getAttribute("currentSessionId");*/
         String session_id = session.toString();
         //TestContextManager.setAttribute("currentSessionId", session_id); //This is not recommended as TestContextManager is cleared after a test method invocation
-        // Store session_id in TestNG context (thread-safe per test run)
-        context.setAttribute("session_id", session_id);
+        /*// Store session_id in TestNG context (thread-safe per test run)
+        context.setAttribute("session_id", session_id);*/
+        TestContextManager.setAttribute("currentSessionId", session_id);
         System.out.println("A browser launched with Session ID: " + session_id);
         
         //Launch the web application
@@ -512,27 +514,34 @@ public class BaseTest {
         		//get current WebDriver session id
                 //SessionId session = ((RemoteWebDriver) getDriver()).getSessionId();
                 //String currentSessionId = (String) TestContextManager.getAttribute("currentSessionId");
-    			String currentSessionId = (String) context.getAttribute("session_id");
+    			//String currentSessionId = (String) context.getAttribute("session_id");
+    			String currentSessionId = (String) TestContextManager.getAttribute("currentSessionId");
+    			
     			//String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
                 String logs_timestamp = DateTimeUtil.getCurrentTimestampInUTC();
         	
             try {	
         		// Save Browser logs in a file
                 String browserLogFilepath = LOGS_DIR_PATH + File.separator + "browser_logs_" + currentSessionId + "_" + logs_timestamp + "_UTC.log";
-                LoggingUtil.saveAndPrintWebLogs(getDriver(), browserLogFilepath);
+                //LoggingUtil.saveAndPrintWebLogs(getDriver(), browserLogFilepath);
+                LoggingUtil.saveLogsInAFile(getDriver(), browserLogFilepath, LogType.BROWSER);
         		
                 // Flush buffered Driver logs in a Driver logs file before quitting the Driver
                 //String driverLogFilePath = LOGS_DIR_PATH + File.separator + "driver_logs_" + currentSessionId + "_" + logs_timestamp + "_UTC.log";
         		//String driverLogFilePath = (String) TestContextManager.getAttribute("driverLogPath");
-        		String driverLogFilePath = (String) context.getAttribute("driverLogPath");
-                LoggingUtil.saveAndPrintDriverLogs(getDriver(), driverLogFilePath);
+        		//String driverLogFilePath = (String) context.getAttribute("driverLogPath");
+                String driverLogFilePath = (String) TestContextManager.getAttribute("driverLogPath");
+                //LoggingUtil.saveAndPrintDriverLogs(getDriver(), driverLogFilePath);
+                LoggingUtil.saveLogsInAFile(getDriver(), driverLogFilePath, LogType.DRIVER);
     		} catch (Exception e) {
     			e.printStackTrace();
     		} finally {
     			getDriver().quit();
         		System.out.println("A browser closed with Session ID: " + currentSessionId);
             	Listeners.getTest().log(Status.INFO, "<b> A browser closed with Session ID: </b>" + currentSessionId);
-        		tldriver.remove(); // This is necessary to clean up the thread
+            	
+            	TestContextManager.clear(); // Clean up thread-local storage after test completion to prevent memory leaks
+            	tldriver.remove(); // This is necessary to clean up the thread
     		}
     	}
     	/*System.out.println("Test Name after Test Method execution: " + TestContextManager.getAttribute("uniqueTestName"));
