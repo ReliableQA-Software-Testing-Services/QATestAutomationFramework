@@ -47,7 +47,7 @@ public class LoginTest extends BaseTest {
 	    loginPage.login(user, pwd);
 	}*/
 	
-	@DataProvider(name = "LoginData", parallel = false)
+	@DataProvider(name = "LoginData", parallel = true)
 	public Object[][] getLoginData() {
 		/* When you use @DataProvider(parallel = true), TestNG automatically spins up 
 		 * distinct execution threads and instantiates a unique, independent ITestResult object 
