@@ -151,8 +151,8 @@ public class LoggingUtil {
                 String header = "\n===== " + logType.toUpperCase() + " LOGS =====";
                 
                 // Write headers to both places
-                System.out.println(header);
-                fileWriter.println(header);
+                System.out.println(header); // Print out to Maven Terminal Console
+                fileWriter.println(header); // Write out to output text file
 
                 LogEntries entries = driver.manage().logs().get(logType);
                 for (LogEntry entry : entries) {
@@ -193,6 +193,22 @@ public class LoggingUtil {
             fileWriter.close();
         } catch (IOException e) {
             System.err.println("Could not save driver/server logs: " + e.getMessage());
+        }
+    }
+    
+    public static void saveLogsInAFile(WebDriver driver, String filePath, String logType) {
+        try (PrintWriter fileWriter = new PrintWriter(new FileOutputStream(filePath, true))) {
+            String header = "===== " + logType.toUpperCase() + " LOGS =====";
+            fileWriter.println(header);
+
+            LogEntries entries = driver.manage().logs().get(logType);
+            for (LogEntry entry : entries) {
+                String logLine = "[" + entry.getTimestamp() + "] " + "[" + entry.getLevel() + "] " + entry.getMessage();
+                fileWriter.println(logLine);   // Write out to output text file
+            }            
+            fileWriter.close();
+        } catch (IOException e) {
+            System.err.println("Could not save logs: " + e.getMessage());
         }
     }
 }
