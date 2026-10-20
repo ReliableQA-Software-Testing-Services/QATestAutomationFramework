@@ -70,7 +70,7 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
         System.out.println("----->Test Name: "  + uniqueTestName);*/
     	String browserName = (String) result.getTestContext().getAttribute("browserName");
         String browserVersion = (String) result.getTestContext().getAttribute("browserVersion");
-        String currentSessionId = (String) result.getTestContext().getAttribute("session_id");
+        //String currentSessionId = (String) result.getTestContext().getAttribute("session_id");
 
         if (BaseTest.getDriver() != null && browserName != null && browserVersion != null) {
         	/*ExtentTest test = extent.createTest(uniqueTestName)
@@ -123,7 +123,7 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
             if (browsr_version == null || browsr_version.isEmpty()) browsr_version = "latest";*/
             
         	//print current session id
-        	//String currentSessionId = (String) TestContextManager.getAttribute("currentSessionId");
+        	String currentSessionId = (String) TestContextManager.getAttribute("currentSessionId");
         	getTest().log(Status.INFO, "<b>A browser launched with Session ID: </b>" + currentSessionId);
             //print Application URL, Browser type, Headless mode, Selenium Grid Run flag in the report
         	getTest().log(Status.INFO, "<b>Test Environment: </b>" + System.getProperty("test.env") 
