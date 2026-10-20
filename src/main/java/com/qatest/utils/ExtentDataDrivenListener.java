@@ -35,11 +35,11 @@ public class ExtentDataDrivenListener implements IInvokedMethodListener {
 
     @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    	// Clean up thread-local storage after test completion to prevent memory leaks
-        if (method.isTestMethod()) {
+    	// Clean up thread-local storage after test completion to prevent memory leaks (moved this code to tearDownTest)
+        /*if (method.isTestMethod()) {
         	//System.out.println("Test Name afterInvocation in ExtentDataDrivernListner: " + TestContextManager.getAttribute("uniqueTestName"));
             //System.out.println("Test Data afterInvocation in ExtentDataDrivernListner: " + TestContextManager.getAttribute("dataMap"));
             TestContextManager.clear();
-        }
+        }*/
     }
 }
