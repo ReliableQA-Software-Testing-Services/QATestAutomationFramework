@@ -1,0 +1,13 @@
+Order of execution:
+1. Listener --> Suite --> onStart
+2. BaseTest --> setUpSuite
+3. Listener --> Test --> onStart
+4. BaseTest --> setUpTest
+5. Listener --> onTestStart
+6. ExtentDataDrivenListener --> beforeInvocation
+7. Invoke a test method
+8. ExtentDataDrivenListener --> afterInvocation
+9. BaseTest --> tearDownTest
+10. Listener --> Test --> onFinish
+11. BaseTest --> tearDownSuite
+12. Listener --> Suite --> onFinish
