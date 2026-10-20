@@ -8,7 +8,7 @@
         <listener class-name="com.qatest.utils.Listeners" />
     </listeners>
 
-    <test name="DataDriven-Login-Tests-Firefox" parallel="methods" thread-count="2">
+    <!-- <test name="DataDriven-Login-Tests-Firefox" parallel="methods" thread-count="2">
     	<parameter name="browser" value="firefox"/>
         <classes>
       		<class name="com.qatest.tests.LoginTest">
@@ -17,9 +17,9 @@
       			</methods> 
       		</class>
     	</classes>
-    </test>
+    </test> -->
     
-    <!-- <test name="DataDriven-Login-Tests-Chrome" parallel="methods" thread-count="2">
+    <test name="DataDriven-Login-Tests-Chrome" parallel="methods" thread-count="2">
     	<parameter name="browser" value="chrome"/>
         <classes>
       		<class name="com.qatest.tests.LoginTest">
@@ -28,7 +28,7 @@
       			</methods> 
       		</class>
     	</classes>
-    </test> -->
+    </test>
     
     <!-- <test name="DataDriven-Login-Tests-Edge" parallel="methods" thread-count="2">
     	<parameter name="browser" value="edge"/>
