@@ -6,7 +6,9 @@ This Selenium-based QA Test Automation Data-driven framework is consisting of be
 
 2. test_data: You can put test data in excel files here. You can also specify run_flag (Y/N) to run only specific test data rows in the excel files.
 
-3. test_results: Test Results are generated with timestamp for each run. These are extent reports with screenshots.
+3. test_results: Test Results are generated with a UTC timestamp for each run. These are HTML extent reports.
+	3.1 screenshots: Screenshots are saved in this sub-folder of test_results folder.
+	3.2 logs: Browser logs and Driver logs are saved in this sub-folder of test_results folder.
 
 4. test_config: A global config file resides here, where you can set the test environment(QA, UAT, etc), application URL, test user details, run mode(GUI/Headless), hub URL for Selenium Grid, global variables, global timeout settings, etc.
 
@@ -19,4 +21,4 @@ From CLI, run "mvn clean test" command at the project-root level(e.g. from "qa-a
 
 You can also specify the TestNG testsuite XML filepath(comma-seperated) 
 with "-Dsurefire.suiteXmlFiles=<filepath1>, <filepath2>,...<filepathN>" argument for "mvn clean test" command.
-If not specified, the TestNG testsuite XML file "testng.xml"(located at the project-root level) is used for "mvn clean test" command.
+If not specified, the TestNG testsuite XML file "testng.xml"(located at the project-root level and configured in a build plugin in pom.xml) is used for "mvn clean test" command.
