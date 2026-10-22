@@ -1,4 +1,4 @@
-Order of execution:
+Order of execution is as below for a TestNG test in a testng XML in the framework:
 1. Listener --> Suite --> onStart
 2. BaseTest --> setUpSuite
 3. Listener --> Test --> onStart
