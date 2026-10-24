@@ -50,7 +50,7 @@ public class ScreenshotUtils {
             					File.separator + "extent-reports" +
             					File.separator + "screenshots" + 
             					//File.separator + "Screenshot_" + currentSessionID + "_" + timestamp + "_" + screenshotName + ".jpeg";
-        						File.separator + "Screenshot_" + currentSessionID + "_" + timestamp + "_UTC.jpeg";
+        						File.separator + "Screenshot_" + currentSessionID + "_" + timestamp + "_UTC.png";
             
             //Files.createDirectories(Paths.get("target/screenshots/"));
             //Files.copy(srcFile.toPath(), Paths.get(destPath));
