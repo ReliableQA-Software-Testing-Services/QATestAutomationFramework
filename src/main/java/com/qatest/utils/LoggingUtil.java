@@ -19,6 +19,7 @@ import org.openqa.selenium.logging.LogType;
 import org.testng.ITestResult;
 
 import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.qatest.base.BaseTest;
 
@@ -209,6 +210,25 @@ public class LoggingUtil {
             fileWriter.close();
         } catch (IOException e) {
             System.err.println("Could not save logs: " + e.getMessage());
+        }
+    }
+    
+    public static void screenshotStepLogger(ExtentTest test, String msg, String screenshotFilePath) {
+    	String screenshotInBase64 = ImageToBase64.getImageToBase64(screenshotFilePath);
+    	if (screenshotInBase64 != null) {
+        	test.log(Status.FAIL, msg, 
+	                MediaEntityBuilder.createScreenCaptureFromBase64String(screenshotInBase64).build());
+        } else {
+        	String htmlTooltipForScreenshot = "<span style='"
+					+ "position: relative; "
+					+ "cursor: pointer; "
+					+ "color: red; "
+					+ "font-weight: bold;' "
+					+ "title='Screenshot filepath is " + screenshotFilePath.replace("\\", "\\\\") + "'>"
+					+ "Hover over to see the screenshot filepath"
+					+ "</span>";
+        	test.log(Status.FAIL, msg, 
+	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotFilePath, htmlTooltipForScreenshot).build());
         }
     }
 }
