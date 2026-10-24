@@ -51,6 +51,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
+import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.qatest.utils.DateTimeUtil;
 import com.qatest.utils.ExtentReportsManager;
@@ -173,11 +174,13 @@ public class BaseTest {
         if (envName == null || envName.isEmpty()) envName = "qa";
         
         System.setProperty("test.env", envName);
+        
         System.out.println("Test Environment: " + System.getProperty("test.env"));
+        // Print test environment in the dashboard of extent-reports
+        ExtentReportsManager.setSystemInfoDynamically("Parallel Run Environment", System.getProperty("test.env"));
         
         String configFilePath = null;
-        
-        switch(envName.toUpperCase()) {
+        switch(System.getProperty("test.env").toUpperCase()) {
         	
 	    	case "PROD":
 	    		// Use File.separator to ensure it works on both Windows (\) and Linux/Mac (/)
@@ -201,11 +204,9 @@ public class BaseTest {
             FileInputStream ip = new FileInputStream(configFilePath);
             prop.load(ip);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
+        	e.printStackTrace();
         }
-
-		// Print test environment in the dashboard of extent-reports
-        ExtentReportsManager.setSystemInfoDynamically("Parallel Run Environment", envName);
         
         // Create logs directory unless it exists
         //new File(prop.getProperty("logs.directory")).mkdirs();
@@ -507,6 +508,9 @@ public class BaseTest {
         /*if (driver != null) {
             driver.quit();
         }*/
+    	
+    	String driverLogFilePath = (String) TestContextManager.getAttribute("driverLogPath");
+    	
     	if (getDriver() != null) {
     		//try {
     			//dualStream.flush();// This is required to write driver logs in a file
@@ -519,31 +523,47 @@ public class BaseTest {
     			
     			//String timestamp = DateTimeUtil.getCurrentTimestampInUTC();
                 String logs_timestamp = DateTimeUtil.getCurrentTimestampInUTC();
-        	
+                String browserLogFilepath = LOGS_DIR_PATH + File.separator + "browser_logs_" + currentSessionId + "_" + logs_timestamp + "_UTC.log";
+                //String driverLogFilePath = LOGS_DIR_PATH + File.separator + "driver_logs_" + currentSessionId + "_" + logs_timestamp + "_UTC.log";
+        		//String driverLogFilePath = (String) TestContextManager.getAttribute("driverLogPath");
+        		//String driverLogFilePath = (String) context.getAttribute("driverLogPath");
+                //String driverLogFilePath = (String) TestContextManager.getAttribute("driverLogPath");
+                
             try {	
         		// Save Browser logs in a file
-                String browserLogFilepath = LOGS_DIR_PATH + File.separator + "browser_logs_" + currentSessionId + "_" + logs_timestamp + "_UTC.log";
                 //LoggingUtil.saveAndPrintWebLogs(getDriver(), browserLogFilepath);
                 LoggingUtil.saveLogsInAFile(getDriver(), browserLogFilepath, LogType.BROWSER);
         		
                 // Flush buffered Driver logs in a Driver logs file before quitting the Driver
-                //String driverLogFilePath = LOGS_DIR_PATH + File.separator + "driver_logs_" + currentSessionId + "_" + logs_timestamp + "_UTC.log";
-        		//String driverLogFilePath = (String) TestContextManager.getAttribute("driverLogPath");
-        		//String driverLogFilePath = (String) context.getAttribute("driverLogPath");
-                String driverLogFilePath = (String) TestContextManager.getAttribute("driverLogPath");
                 //LoggingUtil.saveAndPrintDriverLogs(getDriver(), driverLogFilePath);
                 LoggingUtil.saveLogsInAFile(getDriver(), driverLogFilePath, LogType.DRIVER);
     		} catch (Exception e) {
+    			System.out.println("An exception occurred: " + e);
     			e.printStackTrace();
     		} finally {
     			getDriver().quit();
         		System.out.println("A browser closed with Session ID: " + currentSessionId);
             	Listeners.getTest().log(Status.INFO, "<b> A browser closed with Session ID: </b>" + currentSessionId);
+            	// print browser logs filepath to the console and the extent-report
+            	System.out.println("BROWSER LOGS are at " + browserLogFilepath);
+            	Listeners.getTest().log(Status.INFO, "BROWSER LOGS are at " + browserLogFilepath);
+            	/*System.out.println("DRIVER LOGS are at " + driverLogFilePath);
+            	Listeners.getTest().log(Status.INFO, "DRIVER LOGS are at " + driverLogFilePath);
             	
             	TestContextManager.clear(); // Clean up thread-local storage after test completion to prevent memory leaks
-            	tldriver.remove(); // This is necessary to clean up the thread
+            	tldriver.remove(); // This is necessary to clean up the thread*/
     		}
     	}
+    	
+    	if (driverLogFilePath != null) {
+    		// print driver logs filepath to the console and the extent-report
+    		System.out.println("DRIVER LOGS are at " + driverLogFilePath);
+        	Listeners.getTest().log(Status.INFO, "DRIVER LOGS are at " + driverLogFilePath);
+    	}
+    	
+    	TestContextManager.clear(); // Clean up thread-local storage after test completion to prevent memory leaks
+    	tldriver.remove(); // This is necessary to clean up the thread
+    	
     	/*System.out.println("Test Name after Test Method execution: " + TestContextManager.getAttribute("uniqueTestName"));
         System.out.println("Test Data after Test Method execution: " + TestContextManager.getAttribute("dataMap"));*/
     }
