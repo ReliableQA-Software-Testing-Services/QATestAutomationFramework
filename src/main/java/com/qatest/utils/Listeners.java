@@ -3,6 +3,8 @@
  */
 package com.qatest.utils;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.openqa.selenium.WebDriver;
@@ -42,6 +44,16 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     	String msgOnSuiteStart = "Started TestSuite: " + suite.getName();
     	System.out.println(msgOnSuiteStart);
     	//getTest().log(Status.INFO, msgOnSuiteStart);
+    	
+    	// print Machine Name(which is running tests) in the dashboard of extent-reports
+    	try {
+        	String machineName = InetAddress.getLocalHost().getHostName();
+        	ExtentReportsManager.setSystemInfoDynamically("Machine Name", machineName);
+        } catch (UnknownHostException uhe) {
+        	System.out.println(uhe);
+        	uhe.printStackTrace();
+        }   
+    	
     	// print a Test Suite name in the dashboard of extent-reports
         ExtentReportsManager.setSystemInfoDynamically("Test Suite", suite.getName());
     }
@@ -143,12 +155,14 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
         //getTest().log(Status.FAIL, errorMessage);
         getTest().log(Status.FAIL, "TEST FAILED: " 
         		+ result.getMethod().getMethodName() 
-        		+ "----->" + errorMessage);
+        		+ "---->" + errorMessage);
     	
-        System.out.println("Test failed: " + result.getName());
+        //System.out.println("Test failed: " + result.getName());
+        System.out.println("Test failed: " + TestContextManager.getAttribute("uniqueTestName"));
         //getTest().log(Status.FAIL, markup);
         //getTest().fail(result.getThrowable());
-        getTest().log(Status.FAIL, "Test failed: " + result.getName());
+        //getTest().log(Status.FAIL, "Test failed: " + result.getName());
+        getTest().log(Status.FAIL, "Test failed: " + TestContextManager.getAttribute("uniqueTestName"));
         getTest().log(Status.FAIL, result.getThrowable()); //This is required to be logged for Bugs tab in Extent HTML Reports
         
         // Use the driver instance from the result to capture the screenshot
@@ -175,17 +189,19 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     								+ "cursor: pointer; "
     								+ "color: red; "
     								+ "font-weight: bold;' "
-    								+ "title='File Path: " + screenshotPath.replace("\\", "\\\\") + "'>"
-    								+ "Hover over here to see the filepath"
+    								+ "title='Screenshot filepath is " + screenshotPath.replace("\\", "\\\\") + "'>"
+    								+ "Hover over to see the screenshot filepath"
     								+ "</span>";*/
 	        
 	        //getTest().addScreenCaptureFromPath(screenshotPath);
 	        //getTest().fail("Test Failed - Screenshot attached:", 
 	        //        MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
-	        /*getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure: Click on it to open</font></b>", 
+	        /*getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure:</font></b>", 
 	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath, htmlTooltipForScreenshot).build());*/
-	        getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure: Click on it to open</font></b>", 
-	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+	        LoggingUtil.screenshotStepLogger(getTest(), "<b><font color=red>Screenshot of failure:</font></b>", screenshotPath);
+	        
+	        /*getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure:</font></b>", 
+	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());*/
         } catch (Exception e) {
         	getTest().log(Status.INFO, "Failed to capture screenshot: " + e.getMessage());
         }
@@ -280,7 +296,7 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
         // Force the status to FAIL in ExtentReports
         getTest().log(Status.FAIL, "Test Setup failed due to Configuration/Grid failure for: " 
         		+ itr.getMethod().getMethodName() 
-        		+ "----->" + errorMessage);
+        		+ "---->" + errorMessage);
         getTest().log(Status.FAIL, itr.getThrowable()); //This is required to be logged for Bugs tab in Extent HTML Reports
         // Note: Maven Surefire report automatically picks up IConfigurationListener failures 
         // and marks the test suite as failed/skipped with the stack trace.
