@@ -16,6 +16,7 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.qatest.base.BaseTest;
 import com.qatest.pages.LoginPage;
 import com.qatest.utils.ExcelUtil;
+//import com.qatest.utils.ImageToBase64;
 import com.qatest.utils.Listeners;
 import com.qatest.utils.LoggingUtil;
 import com.qatest.utils.RetryAnalyzer;
@@ -92,9 +93,9 @@ public class LoginTest extends BaseTest {
 	    
 	    //String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver(), data.get("username"));
 	    String screenshotPath = ScreenshotUtils.captureScreenshot(getDriver());
-	    Listeners.getTest().log(Status.INFO, "User: " + data.get("username"), 
-				MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
-	    
+	    /*Listeners.getTest().log(Status.INFO, "User: " + data.get("username"), 
+				MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());*/
+	    LoggingUtil.screenshotStepLogger(Listeners.getTest(), "User: " + data.get("username"), screenshotPath);
 	    loginPage.enterPassword("");
 	    loginPage.clickLogin();
 	    
