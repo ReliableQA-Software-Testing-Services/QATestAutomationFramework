@@ -48,7 +48,7 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     	// print Machine Name(which is running tests) in the dashboard of extent-reports
     	try {
         	String machineName = InetAddress.getLocalHost().getHostName();
-        	ExtentReportsManager.setSystemInfoDynamically("Machine Name", machineName);
+        	ExtentReportsManager.setSystemInfoDynamically("Host Name", machineName);
         } catch (UnknownHostException uhe) {
         	System.out.println(uhe);
         	uhe.printStackTrace();
@@ -190,13 +190,21 @@ public class Listeners implements ISuiteListener, ITestListener, IConfigurationL
     								+ "color: red; "
     								+ "font-weight: bold;' "
     								+ "title='Screenshot filepath is " + screenshotPath.replace("\\", "\\\\") + "'>"
-    								+ "Hover over to see the screenshot filepath"
+    								+ "Hover over to see filepath of the screenshot"
     								+ "</span>";*/
 	        
 	        //getTest().addScreenCaptureFromPath(screenshotPath);
 	        //getTest().fail("Test Failed - Screenshot attached:", 
 	        //        MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
-	        /*getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure:</font></b>", 
+        	/*String htmlTooltipForScreenshot = "<span style='"
+					+ "position: relative; "
+					//+ "cursor: pointer; "
+					+ "color: black;' "
+					//+ "font-weight: bold;' "
+					+ "title='Screenshot filepath is " + screenshotPath.replace("\\", "\\\\") + "'>"
+					+ "Hover over here to see filepath of the screenshot"
+					+ "</span>";
+	        getTest().log(Status.FAIL, "<b><font color=red>Screenshot of failure; click on it to open</font></b>", 
 	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath, htmlTooltipForScreenshot).build());*/
 	        LoggingUtil.screenshotStepLogger(getTest(), "<b><font color=red>Screenshot of failure:</font></b>", screenshotPath);
 	        
