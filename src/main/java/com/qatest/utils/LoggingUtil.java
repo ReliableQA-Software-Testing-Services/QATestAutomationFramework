@@ -221,11 +221,11 @@ public class LoggingUtil {
         } else {
         	String htmlTooltipForScreenshot = "<span style='"
 					+ "position: relative; "
-					+ "cursor: pointer; "
-					+ "color: red; "
-					+ "font-weight: bold;' "
+					//+ "cursor: pointer; "
+					+ "color: black;' "
+					//+ "font-weight: bold;' "
 					+ "title='Screenshot filepath is " + screenshotFilePath.replace("\\", "\\\\") + "'>"
-					+ "Hover over to see the screenshot filepath"
+					+ "Hover over here to see filepath of the screenshot"
 					+ "</span>";
         	test.log(Status.FAIL, msg, 
 	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotFilePath, htmlTooltipForScreenshot).build());
