@@ -73,9 +73,9 @@ public class ExtentReportsManager {
             extent.attachReporter(sparkReporter);
             /*You can attach multiple reporters and output the same information to each report
             extent.attachReporter(sparkReporter, emailReporter);*/
-            extent.setSystemInfo("Tester", "QA Engineer");
-            extent.setSystemInfo("Environment", "QA");
-            extent.setSystemInfo("Target Timezone", TimeZone.getDefault().getID());//Dynamically logs the JVM timezone
+            //extent.setSystemInfo("Tester", "QA Engineer");
+            //extent.setSystemInfo("Environment", "QA");
+            extent.setSystemInfo("Host Timezone", TimeZone.getDefault().getID());//Dynamically logs the JVM timezone
             extent.setSystemInfo("User Name", System.getProperty("user.name"));
             extent.setSystemInfo("OS", System.getProperty("os.name"));
             extent.setSystemInfo("Java Version", System.getProperty("java.version"));
