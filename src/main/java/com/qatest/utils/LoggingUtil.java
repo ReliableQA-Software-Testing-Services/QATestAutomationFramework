@@ -214,20 +214,21 @@ public class LoggingUtil {
     }
     
     public static void screenshotStepLogger(ExtentTest test, String msg, String screenshotFilePath) {
+    	/*String htmlTooltipForScreenshot = "<span style='"
+				+ "position: relative; "
+				//+ "cursor: pointer; "
+				+ "color: black;' "
+				//+ "font-weight: bold;' "
+				+ "title='Screenshot filepath is " + screenshotFilePath.replace("\\", "\\\\") + "'>"
+				+ "Hover over here to see filepath of the screenshot"
+				+ "</span>";*/
+    	String htmlTooltipForScreenshot = "<p> SCREENSHOT FILE is at " + screenshotFilePath.replace("\\", "\\\\") + "</p>";
     	String screenshotInBase64 = ImageToBase64.getImageToBase64(screenshotFilePath);
     	if (screenshotInBase64 != null) {
-        	test.log(Status.FAIL, msg, 
-	                MediaEntityBuilder.createScreenCaptureFromBase64String(screenshotInBase64).build());
-        } else {
-        	String htmlTooltipForScreenshot = "<span style='"
-					+ "position: relative; "
-					//+ "cursor: pointer; "
-					+ "color: black;' "
-					//+ "font-weight: bold;' "
-					+ "title='Screenshot filepath is " + screenshotFilePath.replace("\\", "\\\\") + "'>"
-					+ "Hover over here to see filepath of the screenshot"
-					+ "</span>";
-        	test.log(Status.FAIL, msg, 
+        	test.log(Status.INFO, msg, 
+	                MediaEntityBuilder.createScreenCaptureFromBase64String(screenshotInBase64, htmlTooltipForScreenshot).build());
+        } else { // fallback for image to Base64 string conversion
+        	test.log(Status.INFO, msg, 
 	                MediaEntityBuilder.createScreenCaptureFromPath(screenshotFilePath, htmlTooltipForScreenshot).build());
         }
     }
